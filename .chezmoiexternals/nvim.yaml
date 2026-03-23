@@ -1,4 +1,4 @@
 .config/nvim:
   type: git-repo
-  url: git@github.com/2017fighting/nvim.git
+  url: git@github.com:2017fighting/nvim.git
   refreshPeriod: 168h

@@ -55,7 +55,6 @@ cask "snipaste"
 cask "visual-studio-code"
 cask "wezterm"
 mas "QQ", id: 451108668
-mas "WPS Office", id: 1468073139
 mas "微信", id: 836500024
 vscode "aaron-bond.better-comments"
 vscode "alexdauenhauer.catppuccin-noctis"
@@ -143,5 +142,3 @@ vscode "wmaurer.vscode-jumpy"
 vscode "yinfei.luahelper"
 vscode "yzhang.markdown-all-in-one"
 vscode "zainchen.json"
-go "cmd/go"
-go "cmd/gofmt"
