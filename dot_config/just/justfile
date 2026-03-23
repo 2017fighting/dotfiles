@@ -1,0 +1,35 @@
+default:
+    just --list
+
+[group('brew')]
+dump:
+    brew bundle dump --force --file="~/.config/homebrew/Brewfile" && chezmoi re-add ~/.config/homebrew/Brewfile
+
+[group('chezmoi')]
+diff:
+    chezmoi diff
+
+[group('chezmoi')]
+apply:
+    chezmoi apply
+
+[group('chezmoi')]
+update:
+    chezmoi update
+
+[group('chezmoi')]
+re-add:
+    chezmoi re-add
+
+[group('chezmoi')]
+merge-all:
+	chezmoi merge-all
+
+[group('chezmoi')]
+cd:
+	chezmoi cd
+
+[group('chezmoi')]
+init:
+	chezmoi init
+

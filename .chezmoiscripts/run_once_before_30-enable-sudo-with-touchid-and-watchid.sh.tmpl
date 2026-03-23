@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# 设置目标文件路径
+SUDO_LOCAL="/etc/pam.d/sudo_local"
+
+# 检查目标文件是否已存在
+if [ -f "$SUDO_LOCAL" ]; then
+  echo "$SUDO_LOCAL already exists. It will be overwritten."
+else
+  echo "$SUDO_LOCAL does not exist. Creating a new file."
+fi
+
+# 使用 sudo 来写入文件内容
+echo "# sudo_local: local config file which survives system update and is included for sudo" | sudo tee $SUDO_LOCAL > /dev/null
+echo "# uncomment following line to enable Touch ID for sudo" | sudo tee -a $SUDO_LOCAL > /dev/null
+echo "auth       optional       /opt/homebrew/lib/pam/pam_reattach.so" | sudo tee -a $SUDO_LOCAL > /dev/null
+echo "auth       sufficient     pam_tid.so" | sudo tee -a $SUDO_LOCAL > /dev/null
+echo "auth       optional       {{ .chezmoi.homeDir }}/.local/lib/pam/pam_watchid.so" | sudo tee -a $SUDO_LOCAL > /dev/null
+
+# 设置适当的文件权限
+sudo chmod 644 $SUDO_LOCAL
+sudo chown root:wheel $SUDO_LOCAL
+
+# 输出成功信息
+echo "File $SUDO_LOCAL has been created and configured."

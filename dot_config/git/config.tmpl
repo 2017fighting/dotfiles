@@ -1,0 +1,167 @@
+[filter "lfs"]
+    clean = git-lfs clean -- %f
+    smudge = git-lfs smudge -- %f
+    process = git-lfs filter-process
+    required = true
+
+[user]
+    signingkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE4r71qFG1JUnhLjQq5vBHkA68DkZdKnqL77nmgNG91v"
+    name = {{ .user.name }}
+    email = {{ .user.email }}
+
+[init]
+    defaultBranch = main
+
+[push]
+    autoSetupRemote = true
+
+[pull]
+    rebase = true
+
+[core]
+    pager = delta
+    editor = nvim
+    excludesFile = {{ .chezmoi.homeDir }}/.config/git/ignore
+
+[interactive]
+    diffFilter = delta --color-only
+
+[commit]
+    gpgsign = true
+    template = {{ .chezmoi.homeDir }}/.config/git/message
+    verbose = true
+
+[tag]
+    gpgSign = true
+
+[gpg]
+    format = ssh
+
+[gpg "ssh"]
+    allowedSignersFile = {{ .chezmoi.homeDir }}/.config/git/allowed_signers
+
+[merge]
+    tool = vimdiff
+    conflictstyle = zdiff3
+
+[mergetool "vimdiff"]
+    path = nvim
+
+[diff]
+    external = difft
+    algorithm = histogram
+    colorMoved = default
+
+[rebase]
+    autoStash = true
+    autoSquash = true
+
+[fetch]
+    prune = true
+    prunetags = true
+
+[rerere]
+    enabled = true
+
+[delta]
+    navigate = true  # use n and N to move between diff sections
+    dark = true      # or light = true, or omit for auto-detection
+
+    line-numbers = true
+    side-by-side = false
+    syntax-theme = Dracula
+
+    # Keep headers readable while preserving syntax colors in hunks.
+    commit-style = raw
+    file-style = "bold #8BE9FD"
+    file-decoration-style = "#6272A4 ul"
+    hunk-header-style = "file line-number syntax"
+    hunk-header-file-style = "bold #BD93F9"
+    hunk-header-line-number-style = "#8BE9FD"
+    hunk-header-decoration-style = "#6272A4 box"
+
+    # Low-glare add/remove backgrounds with stronger emphasis on changed tokens.
+    plus-style = "syntax #1C3A2A"
+    plus-emph-style = "syntax bold #2A5A3F"
+    minus-style = "syntax #4A2631"
+    minus-emph-style = "syntax bold #6A3342"
+
+    # Keep line numbers informative without overpowering content.
+    line-numbers-left-style = "#6272A4"
+    line-numbers-right-style = "#6272A4"
+    line-numbers-plus-style = "#50FA7B"
+    line-numbers-minus-style = "#FF6E93"
+    line-numbers-left-format = "{nm:>4}│"
+    line-numbers-right-format = "{np:>4}│"
+
+[alias]
+    # Quick commands (use lazygit for everything else)
+    st = status -sb
+    lg = log --oneline --graph --decorate -10
+
+    # Amend without editor (useful for quick fixes)
+    can = commit --amend --no-edit
+
+    # Undo last commit (keep changes staged)
+    undo = reset --soft HEAD~1
+
+    # Force push safely
+    pf = push --force-with-lease
+
+    # Show current user
+    whoami = "!echo $(git config user.name) '<'$(git config user.email)'>'"
+
+    # Open lazygit
+    ui = "!lazygit"
+
+    # Structured diff tools (difftastic, force ext-diff where needed)
+    dft = -c diff.external=difft diff --ext-diff
+    dfs = -c diff.external=difft show --ext-diff
+    dfl = -c diff.external=difft log -p --ext-diff
+
+    # Show branches sorted by last commit date
+    branches = for-each-ref --sort=-committerdate refs/heads/ --format='%(color:blue)%(committerdate:relative)%(color:reset) %(color:green)%(refname:short)%(color:reset) %(color:yellow)%(authorname)%(color:reset)'
+
+    # Show recent branches (top 10)
+    recent = for-each-ref --sort=-committerdate refs/heads/ --format='%(refname:short)' --count=10
+
+    # Interactive rebase with autosquash
+    rsq = rebase -i --autosquash
+    # git-commit https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/git-commit
+    # `git <type> [(-s, --scope) "<scope>"] [(-a, --attention)] "<message>"`
+    build = "!a() {\nlocal _scope _attention _message\nwhile [ $# -ne 0 ]; do\ncase $1 in\n  -s | --scope )\n    if [ -z $2 ]; then\n      echo \"Missing scope!\"\n      return 1\n    fi\n    _scope=\"$2\"\n    shift 2\n    ;;\n  -a | --attention )\n    _attention=\"!\"\n    shift 1\n    ;;\n  * )\n    _message=\"${_message} $1\"\n    shift 1\n    ;;\nesac\ndone\ngit commit -m \"build${_scope:+(${_scope})}${_attention}:${_message}\"\n}; a"
+	chore = "!a() {\nlocal _scope _attention _message\nwhile [ $# -ne 0 ]; do\ncase $1 in\n  -s | --scope )\n    if [ -z $2 ]; then\n      echo \"Missing scope!\"\n      return 1\n    fi\n    _scope=\"$2\"\n    shift 2\n    ;;\n  -a | --attention )\n    _attention=\"!\"\n    shift 1\n    ;;\n  * )\n    _message=\"${_message} $1\"\n    shift 1\n    ;;\nesac\ndone\ngit commit -m \"chore${_scope:+(${_scope})}${_attention}:${_message}\"\n}; a"
+	ci = "!a() {\nlocal _scope _attention _message\nwhile [ $# -ne 0 ]; do\ncase $1 in\n  -s | --scope )\n    if [ -z $2 ]; then\n      echo \"Missing scope!\"\n      return 1\n    fi\n    _scope=\"$2\"\n    shift 2\n    ;;\n  -a | --attention )\n    _attention=\"!\"\n    shift 1\n    ;;\n  * )\n    _message=\"${_message} $1\"\n    shift 1\n    ;;\nesac\ndone\ngit commit -m \"ci${_scope:+(${_scope})}${_attention}:${_message}\"\n}; a"
+	docs = "!a() {\nlocal _scope _attention _message\nwhile [ $# -ne 0 ]; do\ncase $1 in\n  -s | --scope )\n    if [ -z $2 ]; then\n      echo \"Missing scope!\"\n      return 1\n    fi\n    _scope=\"$2\"\n    shift 2\n    ;;\n  -a | --attention )\n    _attention=\"!\"\n    shift 1\n    ;;\n  * )\n    _message=\"${_message} $1\"\n    shift 1\n    ;;\nesac\ndone\ngit commit -m \"docs${_scope:+(${_scope})}${_attention}:${_message}\"\n}; a"
+	feat = "!a() {\nlocal _scope _attention _message\nwhile [ $# -ne 0 ]; do\ncase $1 in\n  -s | --scope )\n    if [ -z $2 ]; then\n      echo \"Missing scope!\"\n      return 1\n    fi\n    _scope=\"$2\"\n    shift 2\n    ;;\n  -a | --attention )\n    _attention=\"!\"\n    shift 1\n    ;;\n  * )\n    _message=\"${_message} $1\"\n    shift 1\n    ;;\nesac\ndone\ngit commit -m \"feat${_scope:+(${_scope})}${_attention}:${_message}\"\n}; a"
+	fix = "!a() {\nlocal _scope _attention _message\nwhile [ $# -ne 0 ]; do\ncase $1 in\n  -s | --scope )\n    if [ -z $2 ]; then\n      echo \"Missing scope!\"\n      return 1\n    fi\n    _scope=\"$2\"\n    shift 2\n    ;;\n  -a | --attention )\n    _attention=\"!\"\n    shift 1\n    ;;\n  * )\n    _message=\"${_message} $1\"\n    shift 1\n    ;;\nesac\ndone\ngit commit -m \"fix${_scope:+(${_scope})}${_attention}:${_message}\"\n}; a"
+	perf = "!a() {\nlocal _scope _attention _message\nwhile [ $# -ne 0 ]; do\ncase $1 in\n  -s | --scope )\n    if [ -z $2 ]; then\n      echo \"Missing scope!\"\n      return 1\n    fi\n    _scope=\"$2\"\n    shift 2\n    ;;\n  -a | --attention )\n    _attention=\"!\"\n    shift 1\n    ;;\n  * )\n    _message=\"${_message} $1\"\n    shift 1\n    ;;\nesac\ndone\ngit commit -m \"perf${_scope:+(${_scope})}${_attention}:${_message}\"\n}; a"
+	refactor = "!a() {\nlocal _scope _attention _message\nwhile [ $# -ne 0 ]; do\ncase $1 in\n  -s | --scope )\n    if [ -z $2 ]; then\n      echo \"Missing scope!\"\n      return 1\n    fi\n    _scope=\"$2\"\n    shift 2\n    ;;\n  -a | --attention )\n    _attention=\"!\"\n    shift 1\n    ;;\n  * )\n    _message=\"${_message} $1\"\n    shift 1\n    ;;\nesac\ndone\ngit commit -m \"refactor${_scope:+(${_scope})}${_attention}:${_message}\"\n}; a"
+	rev = "!a() {\nlocal _scope _attention _message\nwhile [ $# -ne 0 ]; do\ncase $1 in\n  -s | --scope )\n    if [ -z $2 ]; then\n      echo \"Missing scope!\"\n      return 1\n    fi\n    _scope=\"$2\"\n    shift 2\n    ;;\n  -a | --attention )\n    _attention=\"!\"\n    shift 1\n    ;;\n  * )\n    _message=\"${_message} $1\"\n    shift 1\n    ;;\nesac\ndone\ngit commit -m \"revert${_scope:+(${_scope})}${_attention}:${_message}\"\n}; a"
+	style = "!a() {\nlocal _scope _attention _message\nwhile [ $# -ne 0 ]; do\ncase $1 in\n  -s | --scope )\n    if [ -z $2 ]; then\n      echo \"Missing scope!\"\n      return 1\n    fi\n    _scope=\"$2\"\n    shift 2\n    ;;\n  -a | --attention )\n    _attention=\"!\"\n    shift 1\n    ;;\n  * )\n    _message=\"${_message} $1\"\n    shift 1\n    ;;\nesac\ndone\ngit commit -m \"style${_scope:+(${_scope})}${_attention}:${_message}\"\n}; a"
+	test = "!a() {\nlocal _scope _attention _message\nwhile [ $# -ne 0 ]; do\ncase $1 in\n  -s | --scope )\n    if [ -z $2 ]; then\n      echo \"Missing scope!\"\n      return 1\n    fi\n    _scope=\"$2\"\n    shift 2\n    ;;\n  -a | --attention )\n    _attention=\"!\"\n    shift 1\n    ;;\n  * )\n    _message=\"${_message} $1\"\n    shift 1\n    ;;\nesac\ndone\ngit commit -m \"test${_scope:+(${_scope})}${_attention}:${_message}\"\n}; a"
+	wip = "!a() {\nlocal _scope _attention _message\nwhile [ $# -ne 0 ]; do\ncase $1 in\n  -s | --scope )\n    if [ -z $2 ]; then\n      echo \"Missing scope!\"\n      return 1\n    fi\n    _scope=\"$2\"\n    shift 2\n    ;;\n  -a | --attention )\n    _attention=\"!\"\n    shift 1\n    ;;\n  * )\n    _message=\"${_message} $1\"\n    shift 1\n    ;;\nesac\ndone\ngit commit -m \"wip${_scope:+(${_scope})}${_attention}:${_message}\"\n}; a"
+
+[oh-my-zsh]
+        git-commit-alias = 44394e7225cd2e2200fa2e6a0ed957fed6a4d5d0
+
+# ─────────────────────────────────────────────────────────────
+# URL Rewriting - Use SSH instead of HTTPS for git operations
+# This allows using SSH keys for authentication
+# ─────────────────────────────────────────────────────────────
+[url "ssh://git@github.com/"]
+    insteadOf = https://github.com/
+
+[url "ssh://git@gitlab.com/"]
+    insteadOf = https://gitlab.com/
+
+[url "ssh://git@bitbucket.org/"]
+    insteadOf = https://bitbucket.org/
+
+[credential "https://github.com"]
+        helper =
+        helper = !/opt/homebrew/bin/gh auth git-credential
+
+[credential "https://gist.github.com"]
+        helper =
+        helper = !/opt/homebrew/bin/gh auth git-credential

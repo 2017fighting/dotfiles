@@ -1,0 +1,133 @@
+{
+  "[jsonc]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  // python
+  "[python]": {
+    "editor.formatOnSave": true,
+    "editor.tabSize": 4,
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "editor.codeActionsOnSave": {
+      "source.fixAll.ruff": "always",
+      "source.organizeImports.ruff": "always"
+    },
+    "editor.formatOnType": true
+  },
+  "files.autoSave": "onFocusChange",
+  "editor.fontSize": 14,
+  "editor.fontFamily": "'Fira Code', 'Hack Nerd Font Mono'",
+  "editor.fontLigatures": true,
+  "editor.fontWeight": "400",
+  "Key Promoter.loyaltyLevel": 3,
+  "Key Promoter.suggestKeybindingCreation": false,
+  "Key Promoter.ignoredCommands": [
+    "type",
+    "workbench.action.closeAllEditors",
+    "workbench.action.quickOpen"
+  ],
+  "workbench.colorTheme": "Catppuccin Mocha",
+  "workbench.iconTheme": "catppuccin-mocha",
+  "ime-and-cursor.ChineseIM": "com.apple.inputmethod.SCIM.ITABC",
+  "ime-and-cursor.EnglishIM": "com.apple.keylayout.ABC",
+  "ime-and-cursor.obtainIMCmd": "/opt/homebrew/bin/macism",
+  "ime-and-cursor.switchIMCmd": "/opt/homebrew/bin/macism {im}",
+  "ime-and-cursor.helpVim": true,
+  "git.ignoreLegacyWarning": true,
+  "workbench.startupEditor": "none",
+  "workbench.colorCustomizations": {
+    "editorCursor.foreground": "#FFFFFF",
+    "terminalCursor.foreground": "#FFFFFF"
+  },
+  "smart-ime.disabledOnEnglishTextOverN": 200,
+  "files.autoSaveWhenNoErrors": true,
+  "ime-and-cursor.cursorColor.English": "#FFFFFF",
+  "workbench.editor.editorActionsLocation": "titleBar",
+  "window.commandCenter": false,
+  "google-translate.firstLanguage": "zh-cn",
+  "google-translate.secondLanguage": "en",
+  "files.exclude": {
+    "**/__pycache__": true,
+    "packages/console/bff/node_modules": true,
+    "packages/webserver/app/worker/minhash/tokenizer": true
+  },
+  "go-template.patterns": ["**/_helpers.tpl"],
+  "redhat.telemetry.enabled": true,
+  "workbench.editor.enablePreview": false,
+  "extensions.experimental.affinity": {
+    "asvetliakov.vscode-neovim": 1
+  },
+  "security.workspace.trust.untrustedFiles": "open",
+  "editor.unicodeHighlight.nonBasicASCII": false,
+  "vscode-neovim.compositeTimeout": 1000,
+  "vscode-neovim.logOutputToConsole": true,
+  "vscode-neovim.mouseSelectionDebounceTime": 1000,
+  "vscode-neovim.neovimExecutablePaths.darwin": "/opt/homebrew/bin/nvim",
+  "vscode-neovim.normalSelectionDebounceTime": 100,
+  "vscode-neovim.revealCursorScrollLine": true,
+  "remote.SSH.defaultExtensions": [
+    "ms-python.python",
+    "usernamehw.errorlens",
+    "ms-python.black-formatter",
+    "charliermarsh.ruff",
+    "maciejdems.add-to-gitignore",
+    "njpwerner.autodocstring",
+    "eamodio.gitlens"
+  ],
+  "database-client.autoSync": true,
+  "leetcode.endpoint": "leetcode",
+  "leetcode.workspaceFolder": "/Users/zhao/.leetcode",
+  "leetcode.defaultLanguage": "python3",
+  "editor.defaultFormatter": "ms-python.python",
+  "editor.defaultFoldingRangeProvider": "ms-python.python",
+  "notebook.defaultFormatter": "ms-python.python",
+  "explorer.confirmDragAndDrop": false,
+  "launch": {
+    "configurations": []
+  },
+  "workbench.editor.autoLockGroups": {
+    "mainThreadWebview-markdown.preview": true
+  },
+  "git.openRepositoryInParentFolders": "always",
+  "git.confirmSync": false,
+  "[java]": {
+    "editor.suggest.snippetsPreventQuickSuggestions": false
+  },
+  "java.imports.gradle.wrapper.checksums": [],
+  "docker.extension.enableComposeLanguageServer": false,
+  "[dockercompose]": {
+    "editor.insertSpaces": true,
+    "editor.tabSize": 2,
+    "editor.autoIndent": "advanced",
+    "editor.quickSuggestions": {
+      "other": true,
+      "comments": false,
+      "strings": true
+    },
+    "editor.defaultFormatter": "redhat.vscode-yaml"
+  },
+  "[github-actions-workflow]": {
+    "editor.defaultFormatter": "redhat.vscode-yaml"
+  },
+  "leetcode.hint.commandShortcut": false,
+  "leetcode.hint.configWebviewMarkdown": false,
+  "go.toolsManagement.autoUpdate": true,
+  "leetcode.hint.commentDescription": false,
+  "chat.mcp.gallery.enabled": true,
+  "files.associations": {
+    "dot_zshrc": "shellscript",
+    "dot_zprofile": "shellscript",
+    "*.toml": "toml"
+  },
+  "gitlens.ai.model": "vscode",
+  "gitlens.ai.vscode.model": "copilot:gpt-4.1",
+  "python.defaultInterpreterPath": "",
+  "json.schemaDownload.trustedDomains": {
+    "https://raw.githubusercontent.com/DavidAnson/markdownlint/": true,
+    "https://esm.sh/gh": true,
+    "https://opencode.ai": true,
+    "https://models.dev": true
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "DavidAnson.vscode-markdownlint"
+  }
+}

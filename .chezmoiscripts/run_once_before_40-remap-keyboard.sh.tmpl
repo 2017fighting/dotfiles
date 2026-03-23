@@ -1,0 +1,18 @@
+#!/bin/sh
+# launchctl 控制每次开机后执行remap的命令
+echo "[remap keyboard]"
+{{ $serviceName := "com.raenzo.remapkeyboard" }}
+{{ $plist := print .chezmoi.homeDir "/.local/LaunchDaemons/" $serviceName ".plist" }}
+# plist hash: {{ include $plist | sha256sum }}
+{{ $targetPlist := print "/Library/LaunchDaemons/" $serviceName ".plist" }}
+sudo cp {{ $plist }} {{ $targetPlist }}
+
+if sudo launchctl list | grep -q "{{ $serviceName }}"; then
+    echo "bootout old plist"
+    sudo launchctl bootout system {{ $targetPlist }}
+fi
+sudo chown root:wheel {{ $targetPlist }}
+sudo chmod 644 {{ $targetPlist }}
+
+echo "load plist"
+sudo launchctl load {{ $targetPlist }}

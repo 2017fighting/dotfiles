@@ -1,0 +1,4 @@
+.tmux:
+  type: git-repo
+  url: git@github.com:gpakosz/.tmux.git
+  refreshPeriod: 168h

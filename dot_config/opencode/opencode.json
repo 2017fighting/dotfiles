@@ -1,0 +1,53 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "watcher": {
+    "ignore": [
+      "node_modules/**",
+      "dist/**",
+      ".git/**",
+      ".cache/**",
+      ".direnv/**"
+    ]
+  },
+  "lsp": {
+    "basedpyright": {
+      "command": ["basedpyright-langserver", "--stdio"],
+      "extensions": [".py"]
+    }
+  },
+  "formatter": {
+    "stylua": {
+      "command": ["stylua"],
+      "extensions": [".lua"]
+    }
+  },
+  "compaction": {
+    "auto": true,
+    "prune": true,
+    "reserved": 16384
+  },
+  "autoupdate": false,
+  "mcp": {
+    "exa": {
+      "type": "remote",
+      "url": "https://mcp.exa.ai/mcp",
+      "enabled": true
+    },
+    "context7": {
+      "enabled": true,
+      "type": "remote",
+      "url": "https://mcp.context7.com/mcp",
+      "headers": {
+        "CONTEXT7_API_KEY": "{env:CONTEXT7_API_KEY}"
+      }
+    },
+    "tavily": {
+      "type": "local",
+      "enabled": true,
+      "command": ["tavily-mcp"],
+      "environment": {
+        "TAVILY_API_KEY": "{env:TAVILY_API_KEY}"
+      }
+    }
+  }
+}

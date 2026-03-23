@@ -1,0 +1,6 @@
+#!/bin/sh
+# chezmoi apply 之后，mise安装运行时
+{{ $miseConfig := joinPath .chezmoi.homeDir ".config/mise/mise.toml" -}}
+# mise config: {{ if stat $miseConfig }}{{ output "sha256sum" $miseConfig | trim }}{{ else }}n/a{{ end }}
+
+mise i --yes

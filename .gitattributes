@@ -1,0 +1,46 @@
+# Normalize line endings at the VCS layer (editors are handled by .editorconfig).
+* text=auto eol=lf
+
+# Shell
+*.sh linguist-language=Shell
+*.sh.tmpl linguist-language=Shell
+dot_zshrc linguist-language=Shell
+dot_zshenv.tmpl linguist-language=Shell
+dot_zprofile linguist-language=Shell
+#dot_local/bin/executable_*.tmpl linguist-language=Shell
+#dot_local/bin/lib/*.tmpl linguist-language=Shell
+#dot_local/bin/lib/**/*.tmpl linguist-language=Shell
+#private_dot_config/tmux/tmux.conf.tmpl linguist-language=Shell
+
+# TOML (data type, need detectable to show in stats)
+*.toml linguist-language=TOML linguist-detectable=true
+*.toml.tmpl linguist-language=TOML linguist-detectable=true
+
+# YAML (data type, need detectable to show in stats)
+*.yml linguist-language=YAML linguist-detectable=true
+*.yml.tmpl linguist-language=YAML linguist-detectable=true
+*.yaml linguist-language=YAML linguist-detectable=true
+
+# JSON (data type, need detectable to show in stats)
+*.json linguist-language=JSON linguist-detectable=true
+*.json.tmpl linguist-language=JSON linguist-detectable=true
+
+# Lua
+*.lua linguist-language=Lua
+*.lua.tmpl linguist-language=Lua
+
+# Other
+**/config.tmpl linguist-language=INI
+*.ini.tmpl linguist-language=INI
+dot_gitconfig.tmpl linguist-language=INI
+private_dot_config/bat/config linguist-language=Shell
+#private_dot_config/ghostty/config linguist-language=INI
+private_dot_config/git/ignore linguist-language=Git-Ignore
+private_dot_config/git/message linguist-documentation
+
+# Exclude from stats
+*.md linguist-documentation
+*.md.tmpl linguist-documentation
+*.lock linguist-generated
+dot_codex/symlink_skills.tmpl linguist-generated
+private_dot_config/nvim/lazy-lock.json linguist-generated

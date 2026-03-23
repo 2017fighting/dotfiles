@@ -1,0 +1,25 @@
+.oh-my-zsh:
+  type: git-repo
+  url: git@github.com:ohmyzsh/ohmyzsh.git
+  stripComponents: 1
+  refreshPeriod: 168h
+.oh-my-zsh/custom/plugins/zsh-syntax-highlighting:
+  type: git-repo
+  url: git@github.com:zsh-users/zsh-syntax-highlighting.git
+  stripComponents: 1
+  refreshPeriod: 168h
+.oh-my-zsh/custom/plugins/fzf-tab:
+  type: git-repo
+  url: git@github.com:Aloxaf/fzf-tab.git
+  stripComponents: 1
+  refreshPeriod: 168h
+.oh-my-zsh/custom/plugins/zsh-autosuggestions:
+  type: git-repo
+  url: git@github.com:zsh-users/zsh-autosuggestions.git
+  stripComponents: 1
+  refreshPeriod: 168h
+.oh-my-zsh/custom/plugins/zsh-delete-command-inline:
+  type: git-repo
+  url: git@github.com:2017fighting/zsh-delete-command-inline.git
+  stripComponents: 1
+  refreshPeriod: 168h

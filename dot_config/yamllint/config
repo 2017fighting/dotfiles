@@ -1,0 +1,18 @@
+---
+extends: default
+
+import_ignore: ".gitignore"
+
+rules:
+  truthy:
+    check-keys: false
+
+  # Follow prettier conventions
+  line-length:
+    max: 80
+    level: warning
+    allow-non-breakable-words: true
+    allow-non-breakable-inline-mappings: true
+  comments:
+    min-spaces-from-content: 1
+
