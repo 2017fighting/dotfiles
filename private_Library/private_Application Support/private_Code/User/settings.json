@@ -35,8 +35,8 @@
   "git.ignoreLegacyWarning": true,
   "workbench.startupEditor": "none",
   "workbench.colorCustomizations": {
-    "editorCursor.foreground": "#FF0000",
-    "terminalCursor.foreground": "#FF0000"
+    "editorCursor.foreground": "#FFFFFF",
+    "terminalCursor.foreground": "#FFFFFF"
   },
   "smart-ime.disabledOnEnglishTextOverN": 200,
   "files.autoSaveWhenNoErrors": true,
@@ -129,5 +129,6 @@
   },
   "[markdown]": {
     "editor.defaultFormatter": "DavidAnson.vscode-markdownlint"
-  }
+  },
+  "python.analysis.typeCheckingMode": "standard"
 }
