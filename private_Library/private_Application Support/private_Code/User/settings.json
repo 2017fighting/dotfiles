@@ -131,5 +131,7 @@
     "editor.defaultFormatter": "DavidAnson.vscode-markdownlint"
   },
   "python.analysis.typeCheckingMode": "standard",
-  "chat.disableAIFeatures": true
+  "chat.disableAIFeatures": true,
+  "jdk.telemetry.enabled": true,
+  "makefile.configureOnOpen": true
 }
