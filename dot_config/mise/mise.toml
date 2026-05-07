@@ -16,7 +16,7 @@ yamllint = "latest"
 # php = "latest"
 java = "latest"
 julia = "latest"
-imagemagick = "latest"
+# imagemagick = "latest"
 "npm:tavily-mcp" = "latest"
 # "uv:serena" = "latest"
 

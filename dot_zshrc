@@ -1,5 +1,5 @@
 # make bitwarden as ssh-agent
-export SSH_AUTH_SOCK=~/.bitwarden-ssh-agent.sock
+# export SSH_AUTH_SOCK=~/.bitwarden-ssh-agent.sock
 # Global Justfile location (XDG)
 export JUST_JUSTFILE="${XDG_CONFIG_HOME:-$HOME/.config}/just/justfile"
 
@@ -82,7 +82,6 @@ plugins=(
     sudo
     vi-mode
     tmux
-    brew
     direnv
     starship
     fzf

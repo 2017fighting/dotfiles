@@ -1,7 +1,0 @@
-#!/bin/sh
-{{ if .is_darwin }}
-{{ $brewfile := print .chezmoi.homeDir "/.config/homebrew/Brewfile" }}
-# make it run when the hash of Brewfile changed
-# Brewfile hash: {{ include $brewfile | sha256sum }}
-brew bundle --file {{ $brewfile }}
-{{ end }}
