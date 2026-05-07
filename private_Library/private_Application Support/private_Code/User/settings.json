@@ -25,7 +25,7 @@
     "workbench.action.closeAllEditors",
     "workbench.action.quickOpen"
   ],
-  "workbench.colorTheme": "Catppuccin Mocha",
+  "workbench.colorTheme": "Catppuccin Noctis Mocha",
   "workbench.iconTheme": "catppuccin-mocha",
   "ime-and-cursor.ChineseIM": "com.apple.inputmethod.SCIM.ITABC",
   "ime-and-cursor.EnglishIM": "com.apple.keylayout.ABC",
@@ -133,5 +133,8 @@
   "python.analysis.typeCheckingMode": "standard",
   "chat.disableAIFeatures": true,
   "jdk.telemetry.enabled": true,
-  "makefile.configureOnOpen": true
+  "makefile.configureOnOpen": true,
+  "terminal.integrated.fontFamily": "monospace",
+  "workbench.productIconTheme": "bongocat",
+  "vscode-neovim.useWSL": true
 }

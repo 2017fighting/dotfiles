@@ -19,6 +19,10 @@ julia = "latest"
 imagemagick = "latest"
 "npm:tavily-mcp" = "latest"
 # "uv:serena" = "latest"
+opencode = "v1.14.28"
+# go
+"go:honnef.co/go/tools/cmd/staticcheck" = "latest"
+"golangci-lint" = "latest"
 
 [settings]
 # tools can read the versions files used by other version managers
