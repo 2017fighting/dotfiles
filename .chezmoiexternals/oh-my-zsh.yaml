@@ -23,3 +23,9 @@
   url: git@github.com:2017fighting/zsh-delete-command-inline.git
   stripComponents: 1
   refreshPeriod: 168h
+.oh-my-zsh/custom/plugins/git-commit:
+  type: git-repo
+  url: git@github.com:2017fighting/zsh-git-commit.git
+  stripComponents: 1
+  refreshPeriod: 168h
+
