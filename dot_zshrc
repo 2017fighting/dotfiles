@@ -1,6 +1,16 @@
 # make bitwarden as ssh-agent
-export SSH_AUTH_SOCK=~/.bitwarden-ssh-agent.sock
-# Global Justfile location (XDG)
+# export SSH_AUTH_SOCK=~/.bitwarden-ssh-agent.sock
+export SSH_AUTH_SOCK=${XDG_RUNTIME_DIR}bwssh/agent.sock
+
+# # start ssh-agent and add private key
+# export SSH_AUTH_SOCK=~/.ssh/ssh-agent.sock
+# if ! pgrep -u "$USER" ssh-agent > /dev/null; then
+#     eval "$(ssh-agent -a ~/.ssh/ssh-agent.sock | grep -v 'Agent pid')"
+#     ssh-add -q ~/.ssh/id_ed25519
+# fi
+# export SSH_AGENT_PID=$(pidof ssh-agent)
+# 
+# # Global Justfile location (XDG)
 export JUST_JUSTFILE="${XDG_CONFIG_HOME:-$HOME/.config}/just/justfile"
 
 # If you come from bash you might have to change your $PATH.
@@ -82,7 +92,6 @@ plugins=(
     sudo
     vi-mode
     tmux
-    brew
     direnv
     starship
     fzf

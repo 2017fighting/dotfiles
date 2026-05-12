@@ -599,3 +599,5 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,linux,windows,vim,visualstudiocode,jetbrains,python,rust,go,venv,direnv,virtualenv,node
+
+**/.claude/settings.local.json
