@@ -1,7 +1,12 @@
 {
+  "statusLine": {
+    "type": "command",
+    "command": "claude-powerline"
+  },
   "enabledPlugins": {
     "ecc@ecc": true,
-    "superpowers@claude-plugins-official": true
+    "superpowers@claude-plugins-official": true,
+    "gopls-lsp@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "ecc": {
@@ -11,9 +16,5 @@
       }
     }
   },
-  "theme": "dark",
-  "statusLine": {
-    "type": "command",
-    "command": "claude-powerline"
-  }
+  "theme": "dark"
 }
