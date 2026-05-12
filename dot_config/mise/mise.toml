@@ -19,6 +19,7 @@ julia = "latest"
 # imagemagick = "latest"
 "npm:tavily-mcp" = "latest"
 # "uv:serena" = "latest"
+"claude-code" = "latest"
 
 [settings]
 # tools can read the versions files used by other version managers
