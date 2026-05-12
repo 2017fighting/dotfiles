@@ -20,6 +20,8 @@ julia = "latest"
 "npm:tavily-mcp" = "latest"
 # "uv:serena" = "latest"
 "claude-code" = "latest"
+# "cargo:vault-conductor" = { git = "https://github.com/pirafrank/conductor", version = "latest", locked = true }
+"pipx:bwssh" = "latest"
 
 [settings]
 # tools can read the versions files used by other version managers
