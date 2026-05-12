@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>io.github.reidond.bwssh-agent</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/raincore/.local/share/mise/installs/pipx-bwssh/latest/bin/bwssh-agentd</string>
+        <string>--foreground</string>
+    </array>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/Users/raincore/.local/share/mise/shims:/Users/raincore/.local/bin:/Users/raincore/.local/share/nvim/mason/bin:/Users/raincore/node_modules/.bin:/Users/raincore/bin:/Users/raincore/.local/share/mise/installs/node/lts/bin:/Users/raincore/.local/share/mise/installs/python/latest/bin:/Users/raincore/.local/share/mise/installs/uv/0.10.12/uv-aarch64-apple-darwin:/Users/raincore/.local/share/mise/installs/go/1.26.1/bin:/Users/raincore/.cargo/bin:/Users/raincore/.local/share/mise/installs/lua/5.1/bin:/Users/raincore/.local/share/mise/installs/lua/5.1/luarocks/bin:/Users/raincore/.local/share/mise/installs/ruby/latest/bin:/Users/raincore/.local/share/mise/installs/ruff/0.15.7/ruff-aarch64-apple-darwin:/Users/raincore/.local/share/mise/installs/yamllint/latest/bin:/Users/raincore/.local/share/mise/installs/java/latest/bin:/Users/raincore/.local/share/mise/installs/julia/1.12.5/bin:/Users/raincore/.local/share/mise/installs/npm-tavily-mcp/latest/bin:/Users/raincore/.local/share/mise/installs/claude-code/2.1.139:/Users/raincore/.local/share/mise/installs/claude-powerline/latest/bin:/Users/raincore/.local/share/mise/installs/pipx-bwssh/latest/bin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/opt/pmk/env/global/bin:/opt/homebrew/bin</string>
+    </dict>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <dict>
+        <key>SuccessfulExit</key>
+        <false/>
+    </dict>
+    <key>StandardOutPath</key>
+    <string>/tmp/bwssh-agent.stdout.log</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/bwssh-agent.stderr.log</string>
+</dict>
+</plist>
