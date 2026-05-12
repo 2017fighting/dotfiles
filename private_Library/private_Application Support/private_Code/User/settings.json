@@ -6,7 +6,7 @@
   "[python]": {
     "editor.formatOnSave": true,
     "editor.tabSize": 4,
-    "editor.defaultFormatter": "ms-python.black-formatter",
+    "editor.defaultFormatter": "charliermarsh.ruff",
     "editor.codeActionsOnSave": {
       "source.fixAll.ruff": "always",
       "source.organizeImports.ruff": "always"
@@ -35,8 +35,8 @@
   "git.ignoreLegacyWarning": true,
   "workbench.startupEditor": "none",
   "workbench.colorCustomizations": {
-    "editorCursor.foreground": "#FFFFFF",
-    "terminalCursor.foreground": "#FFFFFF"
+    "editorCursor.foreground": "#FF0000",
+    "terminalCursor.foreground": "#FF0000"
   },
   "smart-ime.disabledOnEnglishTextOverN": 200,
   "files.autoSaveWhenNoErrors": true,
@@ -59,7 +59,6 @@
   "security.workspace.trust.untrustedFiles": "open",
   "editor.unicodeHighlight.nonBasicASCII": false,
   "vscode-neovim.compositeTimeout": 1000,
-  "vscode-neovim.logOutputToConsole": true,
   "vscode-neovim.mouseSelectionDebounceTime": 1000,
   "vscode-neovim.neovimExecutablePaths.darwin": "/opt/homebrew/bin/nvim",
   "vscode-neovim.normalSelectionDebounceTime": 100,
@@ -131,10 +130,16 @@
     "editor.defaultFormatter": "DavidAnson.vscode-markdownlint"
   },
   "python.analysis.typeCheckingMode": "standard",
-  "chat.disableAIFeatures": true,
   "jdk.telemetry.enabled": true,
   "makefile.configureOnOpen": true,
   "terminal.integrated.fontFamily": "monospace",
   "workbench.productIconTheme": "bongocat",
-  "vscode-neovim.useWSL": true
+  "vscode-neovim.useWSL": true,
+  "github.copilot.enable": {
+    "*": false,
+    "plaintext": false,
+    "markdown": false,
+    "scminput": false
+  },
+  "chat.disableAIFeatures": true
 }
