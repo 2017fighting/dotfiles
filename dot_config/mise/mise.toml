@@ -20,6 +20,7 @@ julia = "latest"
 "npm:tavily-mcp" = "latest"
 # "uv:serena" = "latest"
 "claude-code" = "latest"
+"claude-powerline" = "latest"
 # "cargo:vault-conductor" = { git = "https://github.com/pirafrank/conductor", version = "latest", locked = true }
 "pipx:bwssh" = "latest"
 
