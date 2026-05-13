@@ -1,4 +1,6 @@
 .config/nvim:
   type: git-repo
   url: git@github.com:2017fighting/nvim.git
+  clone:
+    args: ["--branch", "v6"]
   refreshPeriod: 168h
