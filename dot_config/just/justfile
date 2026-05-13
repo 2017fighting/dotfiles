@@ -14,6 +14,10 @@ apply:
     chezmoi apply
 
 [group('chezmoi')]
+apply-refresh-externals:
+    chezmoi apply --refresh-externals
+
+[group('chezmoi')]
 update:
     chezmoi update
 
