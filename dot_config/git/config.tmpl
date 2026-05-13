@@ -168,3 +168,6 @@
 [credential]
 	helper = store
 
+[includeIf "gitdir:{{ .chezmoi.homeDir }}/work/"]
+    path = {{ .chezmoi.homeDir }}/.config/git/config-work
+
