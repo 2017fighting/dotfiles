@@ -3,7 +3,7 @@
 {{ if .is_darwin }}
 export SSH_AUTH_SOCK=~/Library/Caches/bwssh/agent.sock
 {{ else }}
-export SSH_AUTH_SOCK=${XDG_RUNTIME_DIR}bwssh/agent.sock
+export SSH_AUTH_SOCK=${XDG_RUNTIME_DIR}/bwssh/agent.sock
 {{ end }}
 
 # # start ssh-agent and add private key
