@@ -46,6 +46,8 @@ textconv:
 data:
   is_darwin: {{ eq .chezmoi.os "darwin" }}
   user:
-    name: {{ promptStringOnce $user "name" "Name for git commits" "Ryan Valor" }}
-    email: {{ promptStringOnce $user "email" "Email for git commits" "272567571@qq.com" }}
+    name: {{ promptStringOnce $user "name" "Default Name for git commits" "Ryan Valor" }}
+    email: {{ promptStringOnce $user "email" "Default Email for git commits" "272567571@qq.com" }}
+    workName: {{ promptStringOnce $user "workName" "Work Name for git commits" "liuyuzhao" }}
+    workEmail: {{ promptStringOnce $user "workEmail" "Work Email for git commits" "liuyuzhao@example.com" }}
     sshPubKey: "{{ promptStringOnce $user "sshPubKey" "SSH public key." "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICr+jTyNySByYnNI/o1z7UPIkK+VWywuWhV69O0WMIuN" }}"
