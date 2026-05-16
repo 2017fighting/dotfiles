@@ -4,16 +4,15 @@
   },
   // python
   "[python]": {
-    "editor.formatOnSave": true,
+    "editor.formatOnSave": false,
     "editor.tabSize": 4,
     "editor.defaultFormatter": "charliermarsh.ruff",
     "editor.codeActionsOnSave": {
       "source.fixAll.ruff": "always",
       "source.organizeImports.ruff": "always"
     },
-    "editor.formatOnType": true
+    "editor.formatOnType": false
   },
-  "files.autoSave": "onFocusChange",
   "editor.fontSize": 14,
   "editor.fontFamily": "'Fira Code', 'Hack Nerd Font Mono'",
   "editor.fontLigatures": true,
@@ -50,7 +49,9 @@
     "packages/console/bff/node_modules": true,
     "packages/webserver/app/worker/minhash/tokenizer": true
   },
-  "go-template.patterns": ["**/_helpers.tpl"],
+  "go-template.patterns": [
+    "**/_helpers.tpl"
+  ],
   "redhat.telemetry.enabled": true,
   "workbench.editor.enablePreview": false,
   "extensions.experimental.affinity": {
@@ -76,7 +77,6 @@
   "leetcode.endpoint": "leetcode",
   "leetcode.workspaceFolder": "/Users/zhao/.leetcode",
   "leetcode.defaultLanguage": "python3",
-  "editor.defaultFormatter": "ms-python.python",
   "editor.defaultFoldingRangeProvider": "ms-python.python",
   "notebook.defaultFormatter": "ms-python.python",
   "explorer.confirmDragAndDrop": false,
@@ -141,5 +141,43 @@
     "markdown": false,
     "scminput": false
   },
-  "chat.disableAIFeatures": true
+  "chat.disableAIFeatures": true,
+  "security.allowedUNCHosts": [
+    "wsl.localhost"
+  ],
+  "git.blame.ignoreWhitespace": true,
+  "gitblame.inlineMessageEnabled": true,
+  "gitblame.ignoreWhitespace": true,
+  "vscode-neovim.ctrlKeysForNormalMode": [
+    "a",
+    "b",
+    "c",
+    "e",
+    "f",
+    "h",
+    "i",
+    "j",
+    "k",
+    "l",
+    "m",
+    "o",
+    "r",
+    "t",
+    "u",
+    "v",
+    "w",
+    "x",
+    "y",
+    "z",
+    "/",
+    "]",
+    "right",
+    "left",
+    "up",
+    "down",
+    "backspace",
+    "delete",
+    "d"
+  ],
+  "vscode-neovim.compositeKeys": {}
 }
