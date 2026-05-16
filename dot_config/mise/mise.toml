@@ -24,6 +24,7 @@ julia = "latest"
 # "cargo:vault-conductor" = { git = "https://github.com/pirafrank/conductor", version = "latest", locked = true }
 "pipx:bwssh" = "latest"
 "github:backnotprop/plannotator" = "latest"
+"npm:@twsxtd/hapi" = "latest"
 
 [settings]
 # tools can read the versions files used by other version managers
