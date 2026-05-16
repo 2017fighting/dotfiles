@@ -1,7 +1,13 @@
 {
+  "statusLine": {
+    "type": "command",
+    "command": "claude-powerline"
+  },
   "enabledPlugins": {
     "ecc@ecc": true,
-    "superpowers@claude-plugins-official": true
+    "superpowers@claude-plugins-official": true,
+    "plannotator@plannotator": true,
+    "context7@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "ecc": {
@@ -9,11 +15,13 @@
         "source": "git",
         "url": "https://github.com/affaan-m/everything-claude-code.git"
       }
+    },
+    "plannotator": {
+      "source": {
+        "source": "github",
+        "repo": "backnotprop/plannotator"
+      }
     }
   },
-  "theme": "dark",
-  "statusLine": {
-    "type": "command",
-    "command": "claude-powerline"
-  }
+  "theme": "dark"
 }
