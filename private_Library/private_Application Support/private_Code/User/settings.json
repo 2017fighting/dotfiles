@@ -179,5 +179,7 @@
     "delete",
     "d"
   ],
-  "vscode-neovim.compositeKeys": {}
+  "vscode-neovim.compositeKeys": {},
+  "remote.autoForwardPortsSource": "hybrid",
+  "terminal.integrated.enableMultiLinePasteWarning": "never"
 }
