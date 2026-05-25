@@ -17,15 +17,23 @@ yamllint = "latest"
 # php = "latest"
 java = "latest"
 julia = "latest"
-# imagemagick = "latest"
-"npm:tavily-mcp" = "latest"
-# "uv:serena" = "latest"
-"claude-code" = "latest"
+claude = "latest"
 "claude-powerline" = "latest"
+
+# cargo
 # "cargo:vault-conductor" = { git = "https://github.com/pirafrank/conductor", version = "latest", locked = true }
+# conda
+# imagemagick = "latest"
+# pipx
 "pipx:bwssh" = "latest"
+"copier" = "latest"
+# github
 "github:backnotprop/plannotator" = "latest"
+# uv
+# "uv:serena" = "latest"
+# npm
 "npm:@twsxtd/hapi" = "latest"
+"npm:tavily-mcp" = "latest"
 
 [settings]
 # tools can read the versions files used by other version managers
