@@ -39,9 +39,9 @@ init:
 
 [group('r2')]
 download-mihomo:
-    rclone copy r2:mihomo ~/.config/mihomo/
+    rclone copy mihomo:mihomo ~/.config/mihomo/
 
 [group('r2')]
 upload-mihomo:
-    rclone copy ~/.config/mihomo/ r2:mihomo
+    rclone copy ~/.config/mihomo/ mihomo:mihomo
 
