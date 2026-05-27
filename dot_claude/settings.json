@@ -1,29 +1,4 @@
 {
-  "enabledPlugins": {
-    "context7@claude-plugins-official": true,
-    "ecc@ecc": true,
-    "plannotator@plannotator": true,
-    "superpowers@claude-plugins-official": true
-  },
-  "extraKnownMarketplaces": {
-    "ecc": {
-      "source": {
-        "source": "git",
-        "url": "https://github.com/affaan-m/everything-claude-code.git"
-      }
-    },
-    "plannotator": {
-      "source": {
-        "repo": "backnotprop/plannotator",
-        "source": "github"
-      }
-    }
-  },
-  "statusLine": {
-    "command": "claude-powerline",
-    "type": "command"
-  },
-  "theme": "dark",
   "permissions": {
     "allow": [
       "mcp__codegraph__codegraph_search",
@@ -34,5 +9,31 @@
       "mcp__codegraph__codegraph_node",
       "mcp__codegraph__codegraph_status"
     ]
-  }
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "claude-powerline"
+  },
+  "enabledPlugins": {
+    "context7@claude-plugins-official": true,
+    "ecc@ecc": true,
+    "plannotator@plannotator": true,
+    "superpowers@claude-plugins-official": true,
+    "chrome-devtools-mcp@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "ecc": {
+      "source": {
+        "source": "git",
+        "url": "https://github.com/affaan-m/everything-claude-code.git"
+      }
+    },
+    "plannotator": {
+      "source": {
+        "source": "github",
+        "repo": "backnotprop/plannotator"
+      }
+    }
+  },
+  "theme": "dark"
 }
