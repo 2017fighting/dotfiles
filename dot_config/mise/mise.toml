@@ -37,6 +37,7 @@ claude = "latest"
 "npm:tavily-mcp" = "latest"
 "wrangler" = "latest"
 "npm:@colbymchenry/codegraph" = "latest"
+"npm:chrome-devtools-mcp" = "latest"
 
 [settings]
 # tools can read the versions files used by other version managers
