@@ -181,5 +181,6 @@
   ],
   "vscode-neovim.compositeKeys": {},
   "remote.autoForwardPortsSource": "hybrid",
-  "terminal.integrated.enableMultiLinePasteWarning": "never"
+  "terminal.integrated.enableMultiLinePasteWarning": "never",
+  "explorer.confirmPasteNative": false
 }
