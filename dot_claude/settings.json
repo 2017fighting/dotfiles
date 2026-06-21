@@ -19,7 +19,8 @@
     "ecc@ecc": true,
     "plannotator@plannotator": true,
     "superpowers@claude-plugins-official": true,
-    "chrome-devtools-mcp@claude-plugins-official": true
+    "chrome-devtools-mcp@claude-plugins-official": true,
+    "gopls-lsp@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "ecc": {
