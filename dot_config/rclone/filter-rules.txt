@@ -1,0 +1,111 @@
+# =========================
+# Git
+# =========================
+
+- .git/**
+- .gitignore
+- .gitattributes
+
+# =========================
+# IDE
+# =========================
+
+- .idea/**
+- .vscode/**
+- .history/**
+- .codegraph/**
+
+# =========================
+# Python
+# =========================
+
+- __pycache__/**
+- *.pyc
+- *.pyo
+- *.pyd
+
+- .pytest_cache/**
+- .ruff_cache/**
+- .mypy_cache/**
+- .tox/**
+- .nox/**
+- .hypothesis/**
+
+# virtualenv
+- .venv/**
+- venv/**
+- env/**
+- ENV/**
+
+# =========================
+# Node
+# =========================
+
+- node_modules/**
+- .npm/**
+- .pnpm-store/**
+- .yarn/**
+- .next/**
+- .nuxt/**
+- .svelte-kit/**
+- .parcel-cache/**
+- .cache/**
+
+# =========================
+# Build Artifacts
+# =========================
+
+- build/**
+- dist/**
+- target/**
+- debug/**
+- out/**
+
+# =========================
+# Logs
+# =========================
+
+- *.log
+- logs/**
+- coverage/**
+- htmlcov/**
+
+# =========================
+# Media files
+# =========================
+- *.xls
+- *.xlsx
+- *.spec
+- *.txt
+- *.html
+- *.exe
+- *.mp4
+- *.pyc
+- *.xml
+- *.pdf
+- *.png
+
+# =========================
+# OS
+# =========================
+
+- .DS_Store
+- Thumbs.db
+- Desktop.ini
+
+# =========================
+# Secrets
+# =========================
+
+- .env
+- .env.*
+- .direnv/**
+
+# =========================
+# Claude
+# =========================
+
+- **/.claude/settings.local.json
+
+# Keep everything else
++ **
