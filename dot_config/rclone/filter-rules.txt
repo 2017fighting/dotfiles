@@ -25,6 +25,7 @@
 - *.pyd
 
 - .pytest_cache/**
+- test*.py
 - .ruff_cache/**
 - .mypy_cache/**
 - .tox/**
