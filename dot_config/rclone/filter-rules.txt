@@ -107,5 +107,11 @@
 
 - **/.claude/settings.local.json
 
+# =========================
+# Special
+# =========================
+
+- models/sample/**
+
 # Keep everything else
 + **
