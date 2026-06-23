@@ -182,5 +182,8 @@
   "vscode-neovim.compositeKeys": {},
   "remote.autoForwardPortsSource": "hybrid",
   "terminal.integrated.enableMultiLinePasteWarning": "never",
-  "explorer.confirmPasteNative": false
+  "explorer.confirmPasteNative": false,
+  "[just]": {
+    "editor.defaultFormatter": "nefrob.vscode-just-syntax"
+  }
 }
