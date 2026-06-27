@@ -1,0 +1,65 @@
+#!/bin/sh
+# Install the CLI toolset on Arch Linux (WSL) from two declarative lists:
+#   ~/.config/pacman/Packages.pacman  → official repos, via pacman (sudo)
+#   ~/.config/pacman/Packages.aur     → AUR, via yay/paru (never as root)
+# CLI-only — desktop apps, fonts, App Store apps, and VS Code extensions stay on the
+# Windows host. This is the Linux analog of run_once_after_10-restore-homebrew.sh.tmpl.
+#
+# Idempotent: --needed makes re-runs skip already-installed packages. Re-runs whenever
+# either list changes — the hash comments below alter this script's rendered content,
+# which chezmoi's run_once tracking keys on (same trick as the homebrew script).
+{{ if eq .chezmoi.os "linux" }}
+{{ $pacmanList := joinPath .chezmoi.homeDir ".config/pacman/Packages.pacman" }}
+{{ $aurList    := joinPath .chezmoi.homeDir ".config/pacman/Packages.aur" }}
+# Packages.pacman hash: {{ include $pacmanList | sha256sum }}
+# Packages.aur hash: {{ include $aurList | sha256sum }}
+
+PACMAN_DIR="$HOME/.config/pacman"
+
+if [ ! -f "$PACMAN_DIR/Packages.pacman" ]; then
+  echo "[pacman] $PACMAN_DIR/Packages.pacman not found — re-run 'chezmoi apply'." >&2
+  exit 0
+fi
+
+# Strip inline comments + blank lines; emit the package name (first whitespace field).
+list_packages() {
+  sed 's/#.*//' "$1" | awk 'NF { print $1 }'
+}
+
+# --- official repos (pacman) -------------------------------------------------------
+if command -v pacman >/dev/null 2>&1; then
+  failed=""
+  # Install one package at a time: `pacman -S a b c` aborts the whole batch on the
+  # first unknown name, so a loop keeps one bad name from blocking the rest.
+  for pkg in $(list_packages "$PACMAN_DIR/Packages.pacman"); do
+    echo "[pacman] installing $pkg"
+    # stdout (progress bars) hidden; errors still surface on stderr.
+    if ! sudo pacman -S --needed --noconfirm "$pkg" >/dev/null; then
+      failed="$failed $pkg"
+    fi
+  done
+  [ -n "$failed" ] && echo "[pacman] failed:$failed" >&2
+else
+  echo "[pacman] 'pacman' not found — not Arch? skipping official packages." >&2
+fi
+
+# --- AUR (yay or paru, always as the non-root user) --------------------------------
+if command -v yay >/dev/null 2>&1; then
+  helper=yay
+elif command -v paru >/dev/null 2>&1; then
+  helper=paru
+else
+  helper=""
+fi
+
+if [ -z "$helper" ]; then
+  aur_pkgs="$(list_packages "$PACMAN_DIR/Packages.aur" | tr '\n' ' ')"
+  [ -n "$aur_pkgs" ] && echo "[pacman] no AUR helper (yay/paru); skipped:$aur_pkgs" >&2
+else
+  for pkg in $(list_packages "$PACMAN_DIR/Packages.aur"); do
+    echo "[pacman] installing $pkg (AUR via $helper)"
+    "$helper" -S --needed --noconfirm "$pkg" >/dev/null \
+      || echo "[pacman] $helper: failed to install $pkg" >&2
+  done
+fi
+{{ end }}

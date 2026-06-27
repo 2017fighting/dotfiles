@@ -1,0 +1,6 @@
+# Arch Linux (WSL) — AUR-only CLI tools.
+# Installed by run_once_after_11-restore-pacman.sh.tmpl via yay/paru (auto-detected,
+# run as the non-root user — AUR helpers refuse root). If no helper is present the
+# script prints these and skips, rather than failing the apply.
+# Format: <pkg> # <note>.  One package per line; text after '#' is a comment.
+fpp  # PathPicker — pick/open files from piped input

@@ -1,0 +1,48 @@
+# Arch Linux (WSL) CLI toolset — official pacman repos.
+# Installed idempotently by run_once_after_11-restore-pacman.sh.tmpl.
+# Format: <pkg> # <note>.  One package per line; text after '#' is a comment.
+atuin            # shell history for zsh/bash/fish
+bat              # cat(1) with syntax highlighting + git integration
+bitwarden-cli    # Bitwarden password manager CLI
+bottom           # cross-platform process/system monitor (btm)
+chezmoi          # dotfiles manager
+cmake            # cross-platform build system
+composer         # PHP dependency manager
+corepack         # Node.js PM shim (npm/yarn/pnpm)  [brew: npm corepack]
+difftastic       # structural diff
+direnv           # per-directory env vars
+docker           # containers
+eza              # modern ls replacement
+fzf              # command-line fuzzy finder
+gdu              # disk usage analyzer
+github-cli       # GitHub CLI  [brew: gh]
+git              # distributed version control
+git-delta        # syntax-highlighting pager for git/diff
+git-lfs          # large-file storage for git
+go               # Go toolchain  [brew: cmd/go, cmd/gofmt]
+htop             # interactive process viewer
+jq               # JSON processor
+just             # project command runner
+lazygit          # terminal UI for git
+libyaml          # YAML C library
+markdownlint-cli # Markdown linter
+mise             # polyglot runtime manager (asdf clone)
+navi             # interactive cheatsheet tool
+neovim           # Vim fork
+nginx            # HTTP(S) server / reverse proxy
+prettier         # code formatter (JS/CSS/JSON/YAML/MD)
+rclone           # rsync for cloud storage
+ripgrep          # fast recursive search (rg)
+shellcheck       # shell script linter
+shfmt            # shell script formatter
+sshpass          # non-interactive SSH password auth
+starship         # cross-shell prompt
+tmux             # terminal multiplexer
+tree             # directory tree viewer
+tree-sitter      # incremental parsing lib + CLI  [brew: tree-sitter + tree-sitter-cli]
+urlscan          # view/extract URLs from a message
+wget             # internet file retriever
+yazi             # terminal file manager
+yq               # YAML/JSON/XML/CSV processor
+zoxide           # smarter cd
+android-tools    # adb, fastboot  [brew cask: android-platform-tools]
