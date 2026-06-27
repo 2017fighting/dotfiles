@@ -21,17 +21,17 @@
     <array>
         <string>/bin/zsh</string>
         <string>-lc</string>
-        <string>eval "$(/opt/homebrew/bin/mise activate zsh 2&gt;/dev/null)"; exec hapi runner start-sync --workspace-root /Users/raincore/clone --workspace-root /Users/raincore/tmp --workspace-root /Users/raincore/work</string>
+        <string>eval "$(/opt/homebrew/bin/mise activate zsh 2&gt;/dev/null)"; exec hapi runner start-sync --workspace-root {{ .chezmoi.homeDir }}/clone --workspace-root {{ .chezmoi.homeDir }}/tmp --workspace-root {{ .chezmoi.homeDir }}/work</string>
     </array>
 
     <key>EnvironmentVariables</key>
     <dict>
         <key>HOME</key>
-        <string>/Users/raincore</string>
+        <string>{{ .chezmoi.homeDir }}</string>
     </dict>
 
     <key>WorkingDirectory</key>
-    <string>/Users/raincore</string>
+    <string>{{ .chezmoi.homeDir }}</string>
 
     <key>RunAtLoad</key>
     <true/>
@@ -46,8 +46,8 @@
     <string>Background</string>
 
     <key>StandardOutPath</key>
-    <string>/Users/raincore/Library/Logs/hapi-runner/out.log</string>
+    <string>{{ .chezmoi.homeDir }}/Library/Logs/hapi-runner/out.log</string>
     <key>StandardErrorPath</key>
-    <string>/Users/raincore/Library/Logs/hapi-runner/err.log</string>
+    <string>{{ .chezmoi.homeDir }}/Library/Logs/hapi-runner/err.log</string>
 </dict>
 </plist>
