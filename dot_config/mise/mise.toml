@@ -6,6 +6,7 @@
 node = 'lts'
 pnpm = "latest"
 bun = "latest"
+yarn = "latest"
 python = "latest"
 # python = "{{ get_env(name='PYTHON_VERSION', default='3.11') }}"
 uv = "latest"
