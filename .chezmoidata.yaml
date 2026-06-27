@@ -11,7 +11,17 @@ ecc:
 # or the .service file.
 hapi:
   runner:
-    version: "1"
+    # Relative home-dir subpaths that `hapi runner start-sync` syncs with the hub.
+    # Single source of truth — consumed by the launchd plist (macOS) and the
+    # systemd unit (Linux), which each expand them under their own home specifier
+    # ({{ .chezmoi.homeDir }} / %h). Add a path here and both pick it up on the
+    # next `chezmoi apply`.
+    workspaceRoots:
+      - clone
+      - tmp
+      - work
+      - .local/share
+    version: "3"
 
 # bwssh-agent LaunchAgent (macOS only) — loaded by
 # .chezmoiscripts/run_onchange_after_81-bwssh-agent.sh.tmpl. Bump `version` to

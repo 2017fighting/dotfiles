@@ -21,7 +21,9 @@
     <array>
         <string>/bin/zsh</string>
         <string>-lc</string>
-        <string>eval "$(/opt/homebrew/bin/mise activate zsh 2&gt;/dev/null)"; exec hapi runner start-sync --workspace-root {{ .chezmoi.homeDir }}/clone --workspace-root {{ .chezmoi.homeDir }}/tmp --workspace-root {{ .chezmoi.homeDir }}/work</string>
+        <!-- Workspace roots come from .chezmoidata.yaml (hapi.runner.workspaceRoots);
+             expanded here as relative paths under the home dir. -->
+        <string>eval "$(/opt/homebrew/bin/mise activate zsh 2&gt;/dev/null)"; exec hapi runner start-sync{{ range .hapi.runner.workspaceRoots }} --workspace-root {{ $.chezmoi.homeDir }}/{{ . }}{{ end }}</string>
     </array>
 
     <key>EnvironmentVariables</key>

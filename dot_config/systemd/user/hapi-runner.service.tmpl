@@ -21,7 +21,9 @@ SyslogIdentifier=hapi-runner
 # ~/.zshrc, so the oh-my-zsh `mise` plugin does NOT run here. `mise` must already
 # be on PATH via ~/.zshenv (e.g. ~/.local/bin or /usr/bin). If it isn't, add its
 # directory to PATH in ~/.zshenv.
-ExecStart=/bin/zsh -lc 'command -v mise >/dev/null 2>&1 && eval "$(mise activate zsh)"; exec hapi runner start-sync --workspace-root %h/clone --workspace-root %h/tmp --workspace-root %h/work'
+# Workspace roots come from .chezmoidata.yaml (hapi.runner.workspaceRoots),
+# expanded here as relative paths under %h (systemd's home specifier).
+ExecStart=/bin/zsh -lc 'command -v mise >/dev/null 2>&1 && eval "$(mise activate zsh)"; exec hapi runner start-sync{{ range .hapi.runner.workspaceRoots }} --workspace-root %h/{{ . }}{{ end }}'
 # Auto-recover from crashes and hub/LAN outages; back off between attempts,
 # mirroring the macOS plist's KeepAlive + ThrottleInterval=20.
 Restart=always
