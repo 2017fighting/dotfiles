@@ -6,6 +6,8 @@
 #         without any warranty.
 #         Copyright 2012— Gregory Pakosz (@gpakosz).
 
+# force to use screen-256color
+set -g default-terminal "screen-256color" #!important
 
 # -- bindings ------------------------------------------------------------------
 
