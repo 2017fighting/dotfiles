@@ -1,0 +1,38 @@
+#!/bin/sh
+# Load the bwssh-agent LaunchAgent (macOS only) so the Bitwarden-backed SSH agent
+# starts at login and auto-recovers from crashes. The plist wraps bwssh-agentd in
+# a login shell (mise activation) and is deployed to
+# ~/Library/LaunchAgents/io.github.reidond.bwssh-agent.plist.
+#
+# Linux runs bwssh via systemd (~/.config/systemd/user/bwssh-agent.service), which
+# this script intentionally does NOT touch — per the user's instruction, bwssh
+# autostart here is macOS-only.
+#
+# Idempotent. Re-runs whenever bwssh.agent.version changes — bump it in
+# .chezmoidata.yaml to force a reload after editing the plist.
+# config-version={{ .bwssh.agent.version }}
+set -eu
+
+{{ if eq .chezmoi.os "darwin" }}
+# ---------------------------------------------------------------------------------------------------------------------
+# macOS — load the bwssh-agent LaunchAgent into the per-user GUI domain.
+# ---------------------------------------------------------------------------------------------------------------------
+LABEL="io.github.reidond.bwssh-agent"
+DOMAIN="gui/$(id -u)"
+PLIST="$HOME/Library/LaunchAgents/$LABEL.plist"
+
+if [ ! -f "$PLIST" ]; then
+  echo "[bwssh-agent] plist not found at $PLIST — re-run 'chezmoi apply'." >&2
+  exit 0
+fi
+
+# Bootout any previously-loaded (possibly stale) instance FIRST, so launchd
+# adopts the latest plist. bootout returns non-zero when nothing is loaded —
+# that is expected, so swallow it.
+launchctl bootout "$DOMAIN/$LABEL" 2>/dev/null || true
+launchctl bootstrap "$DOMAIN" "$PLIST"
+# Re-enable in case it was disabled via `launchctl disable`.
+launchctl enable "$DOMAIN/$LABEL"
+
+echo "[bwssh-agent] launchd agent loaded: $LABEL"
+{{ end }}

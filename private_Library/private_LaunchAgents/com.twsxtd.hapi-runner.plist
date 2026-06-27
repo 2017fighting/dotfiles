@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.twsxtd.hapi-runner</string>
+
+    <!-- `hapi runner start-sync` runs the runner in the FOREGROUND (unlike
+         `runner start`, which spawns a detached daemon and exits). That is exactly
+         what launchd wants to supervise: one long-lived process it can track and
+         restart. launchd does NOT inherit the shell PATH, so we wrap in a login
+         shell that activates mise — this resolves hapi, claude, node, git and lets
+         ~/.zshenv supply HAPI_API_URL, just like an interactive terminal.
+
+         KeepAlive=true makes the runner resilient: the hub (hapi.raenzo.com) is a
+         LAN host (192.168.9.117), and at login Wi-Fi may not be up yet, so the
+         first attempt can fail with ECONNREFUSED. launchd retries every
+         ThrottleInterval until the network is ready, then the runner stays up.
+         It also auto-recovers from later Wi-Fi flaps / crashes. -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/zsh</string>
+        <string>-lc</string>
+        <string>eval "$(/opt/homebrew/bin/mise activate zsh 2&gt;/dev/null)"; exec hapi runner start-sync --workspace-root /Users/raincore/clone --workspace-root /Users/raincore/tmp --workspace-root /Users/raincore/work</string>
+    </array>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>HOME</key>
+        <string>/Users/raincore</string>
+    </dict>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/raincore</string>
+
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+
+    <!-- Back off between restart attempts (e.g. during a hub/LAN outage). -->
+    <key>ThrottleInterval</key>
+    <integer>20</integer>
+
+    <key>ProcessType</key>
+    <string>Background</string>
+
+    <key>StandardOutPath</key>
+    <string>/Users/raincore/Library/Logs/hapi-runner/out.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/raincore/Library/Logs/hapi-runner/err.log</string>
+</dict>
+</plist>

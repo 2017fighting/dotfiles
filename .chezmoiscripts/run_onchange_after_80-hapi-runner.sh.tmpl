@@ -1,0 +1,62 @@
+#!/bin/sh
+# Wire up hapi runner (https://hapi.raenzo.com) to start automatically and survive
+# crashes / hub-LAN outages:
+#   • macOS → launchd LaunchAgent  (~/Library/LaunchAgents/com.twsxtd.hapi-runner.plist)
+#   • Linux → systemd user unit    (~/.config/systemd/user/hapi-runner.service)
+# Both supervise `hapi runner start-sync` in the foreground and auto-restart.
+#
+# Idempotent. Re-runs whenever hapi.runner.version changes — bump it in
+# .chezmoidata.yaml to force a reload after editing the plist or .service file.
+# config-version={{ .hapi.runner.version }}
+set -eu
+
+{{ if eq .chezmoi.os "darwin" }}
+# ---------------------------------------------------------------------------------------------------------------------
+# macOS — load the LaunchAgent into the per-user GUI domain.
+# ---------------------------------------------------------------------------------------------------------------------
+LABEL="com.twsxtd.hapi-runner"
+DOMAIN="gui/$(id -u)"
+PLIST="$HOME/Library/LaunchAgents/$LABEL.plist"
+
+if [ ! -f "$PLIST" ]; then
+  echo "[hapi-runner] plist not found at $PLIST — re-run 'chezmoi apply'." >&2
+  exit 0
+fi
+
+# Log directory the plist's StandardOutPath / StandardErrorPath write to.
+mkdir -p "$HOME/Library/Logs/hapi-runner"
+
+# Bootout any previously-loaded (possibly stale) instance FIRST, so launchd
+# adopts the latest plist. bootout returns non-zero when nothing is loaded —
+# that is expected, so swallow it.
+launchctl bootout "$DOMAIN/$LABEL" 2>/dev/null || true
+launchctl bootstrap "$DOMAIN" "$PLIST"
+# Re-enable in case it was disabled via `launchctl disable`.
+launchctl enable "$DOMAIN/$LABEL"
+
+echo "[hapi-runner] launchd agent loaded: $LABEL"
+{{ end }}
+
+{{ if eq .chezmoi.os "linux" }}
+# ---------------------------------------------------------------------------------------------------------------------
+# Linux — enable the systemd user unit so it starts at login AND at boot.
+# ---------------------------------------------------------------------------------------------------------------------
+UNIT="hapi-runner.service"
+UNIT_PATH="$HOME/.config/systemd/user/$UNIT"
+
+if [ ! -f "$UNIT_PATH" ]; then
+  echo "[hapi-runner] unit not found at $UNIT_PATH — re-run 'chezmoi apply'." >&2
+  exit 0
+fi
+
+# Pick up the freshly-deployed unit file, then enable (WantedBy symlink) + start.
+systemctl --user daemon-reload
+systemctl --user enable --now "$UNIT"
+
+# Linger so the user manager (and thus the runner) starts at BOOT, before login —
+# matching the macOS LaunchAgent's RunAtLoad behaviour. Falls back to sudo if polkit
+# denies it. Best-effort: a failure here still leaves the service starting at login.
+loginctl enable-linger "$USER" 2>/dev/null || sudo loginctl enable-linger "$USER"
+
+echo "[hapi-runner] systemd unit enabled: $UNIT (linger on)"
+{{ end }}

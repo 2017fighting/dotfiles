@@ -1,0 +1,32 @@
+[Unit]
+Description=hapi runner (foreground sync with the hub)
+Documentation=https://hapi.raenzo.com
+# The hub (hapi.raenzo.com) is a LAN host; at boot the network may not be up yet,
+# so wait for it. Restart=always below covers any remaining races.
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h
+Environment=HOME=%h
+SyslogIdentifier=hapi-runner
+# `hapi runner start-sync` runs in the FOREGROUND (unlike `runner start`, which
+# spawns a detached daemon and exits) — exactly what systemd wants to supervise:
+# one long-lived process it can track and restart. Wrapped in a login shell so
+# mise (which provides hapi/claude/node) is activated and ~/.zshenv supplies
+# HAPI_API_URL — the same setup as the macOS LaunchAgent.
+#
+# Note: a non-interactive login shell sources ~/.zshenv (and ~/.zprofile) but NOT
+# ~/.zshrc, so the oh-my-zsh `mise` plugin does NOT run here. `mise` must already
+# be on PATH via ~/.zshenv (e.g. ~/.local/bin or /usr/bin). If it isn't, add its
+# directory to PATH in ~/.zshenv.
+ExecStart=/bin/zsh -lc 'command -v mise >/dev/null 2>&1 && eval "$(mise activate zsh)"; exec hapi runner start-sync --workspace-root %h/clone --workspace-root %h/tmp --workspace-root %h/work'
+# Auto-recover from crashes and hub/LAN outages; back off between attempts,
+# mirroring the macOS plist's KeepAlive + ThrottleInterval=20.
+Restart=always
+RestartSec=20
+TimeoutStopSec=15
+
+[Install]
+WantedBy=default.target

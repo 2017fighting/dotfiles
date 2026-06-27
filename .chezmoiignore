@@ -12,3 +12,12 @@ AGENTS.md
 .claude/plugins
 # local design docs (not deployed to $HOME)
 docs
+
+{{ if eq .chezmoi.os "linux" }}
+# macOS-only — LaunchAgents + the per-user ~/Library (Application Support, etc.)
+Library
+{{ end }}
+{{ if eq .chezmoi.os "darwin" }}
+# Linux-only — systemd user units (macOS uses launchd via private_Library instead)
+.config/systemd
+{{ end }}
