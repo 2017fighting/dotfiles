@@ -11,8 +11,8 @@
 {{ if eq .chezmoi.os "linux" }}
 {{ $pacmanList := joinPath .chezmoi.homeDir ".config/pacman/Packages.pacman" }}
 {{ $aurList    := joinPath .chezmoi.homeDir ".config/pacman/Packages.aur" }}
-# Packages.pacman hash: {{ include $pacmanList | sha256sum }}
-# Packages.aur hash: {{ include $aurList | sha256sum }}
+# Packages.pacman hash: {{ if stat $pacmanList }}{{ include $pacmanList | sha256sum }}{{ else }}n/a{{ end }}
+# Packages.aur hash: {{ if stat $aurList }}{{ include $aurList | sha256sum }}{{ else }}n/a{{ end }}
 
 PACMAN_DIR="$HOME/.config/pacman"
 
