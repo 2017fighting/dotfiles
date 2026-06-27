@@ -1,3 +1,5 @@
+If Couldn't find key in agent when Commit git changes, you need to find SSH_AUTH_SOCK in my ~/.zshrc
+
 <!-- CODEGRAPH_START -->
 ## CodeGraph
 
