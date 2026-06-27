@@ -1,0 +1,6 @@
+# ecc (Everything Claude Code) — managed by chezmoi.
+# Bump `version` to upgrade; the run_onchange installer script re-runs automatically.
+# See docs/superpowers/specs/2026-06-27-manage-ecc-with-chezmoi-design.md
+ecc:
+  version: "v2.0.0"
+  profile: "full"

@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# Manage ecc (https://github.com/affaan-m/ecc) via chezmoi.
+# Re-runs whenever ecc.version changes (version is embedded below). Idempotent.
+# version={{ .ecc.version }} profile={{ .ecc.profile }}
+set -euo pipefail
+
+ECC_SRC="$HOME/.local/share/ecc"
+ECC_VERSION="{{ .ecc.version }}"
+ECC_PROFILE="{{ .ecc.profile }}"
+
+# ecc's installer needs node (mise-managed on this machine). Skip gracefully if absent.
+if ! command -v node >/dev/null 2>&1; then
+  echo "[ecc] node not found on PATH — skipping install." >&2
+  exit 0
+fi
+
+# Ensure the repo is present. .chezmoiexternals/ecc.yaml.tmpl usually clones it first,
+# but this self-clone makes the script correct regardless of apply ordering.
+if [ ! -d "$ECC_SRC/.git" ]; then
+  git clone --quiet --branch "$ECC_VERSION" https://github.com/affaan-m/ecc.git "$ECC_SRC"
+fi
+
+cd "$ECC_SRC"
+
+# Pin the exact version. Authoritative — overrides any drift from the external refresh.
+git fetch --tags --quiet
+git checkout --quiet --force "$ECC_VERSION"
+
+# Install node deps (idempotent), then run ecc's non-interactive installer into ~/.claude.
+npm install --no-audit --no-fund --loglevel=error
+node scripts/install-apply.js --target claude --profile "$ECC_PROFILE"
+
+echo "[ecc] installed $ECC_VERSION (profile=$ECC_PROFILE) into ~/.claude"

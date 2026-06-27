@@ -2,3 +2,11 @@ README.md
 AGENTS.md
 # to avoid reporting this files have changed
 .oh-my-zsh/cache
+
+# ecc is installed by .chezmoiscripts/run_onchange_after_70-ecc-install.sh.tmpl;
+# its output under ~/.claude is owned by ecc's installer, not chezmoi.
+.claude/rules/ecc
+.claude/skills/ecc
+.claude/ecc
+# local design docs (not deployed to $HOME)
+docs

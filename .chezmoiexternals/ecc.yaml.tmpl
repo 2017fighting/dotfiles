@@ -1,0 +1,11 @@
+# ecc repo clone, consumed by .chezmoiscripts/run_onchange_after_70-ecc-install.sh.tmpl.
+# The installer script force-checks out ecc.version before installing, so this external
+# is a declarative bootstrap/fetch source (mirrors the oh-my-zsh / nvim pattern).
+.local/share/ecc:
+  type: git-repo
+  url: https://github.com/affaan-m/ecc.git
+  clone:
+    args:
+      - --branch
+      - "{{ .ecc.version }}"
+  refreshPeriod: 168h

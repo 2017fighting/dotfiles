@@ -16,19 +16,12 @@
   },
   "enabledPlugins": {
     "context7@claude-plugins-official": true,
-    "ecc@ecc": true,
     "plannotator@plannotator": true,
     "superpowers@claude-plugins-official": true,
     "chrome-devtools-mcp@claude-plugins-official": true,
     "gopls-lsp@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
-    "ecc": {
-      "source": {
-        "source": "git",
-        "url": "https://github.com/affaan-m/everything-claude-code.git"
-      }
-    },
     "plannotator": {
       "source": {
         "source": "github",
