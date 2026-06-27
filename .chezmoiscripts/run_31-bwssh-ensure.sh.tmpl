@@ -1,0 +1,72 @@
+#!/bin/sh
+# Ensure the bwssh (Bitwarden-backed) SSH agent daemon is running and the vault
+# is unlocked BEFORE the SSH consumers run: run_70-ecc-install (clones ecc over
+# SSH) and the .chezmoiexternals (oh-my-zsh, nvim, tmux, ecc — all cloned over
+# SSH, the HTTPS ones forced to SSH by the global insteadOf in git/config.tmpl).
+#
+# Why position 31 (after run_30, before run_70 + .config/* externals):
+#   run_30 (mise install) installs the `bwssh` binary; this gate must run AFTER
+#   that so `command -v bwssh` succeeds, but BEFORE run_70 + the externals so
+#   SSH works when they clone. An apply.pre hook runs before mise installs
+#   bwssh, so it cannot start/unlock what isn't installed yet — hence a script,
+#   not a hook.
+#
+# Why we materialize the config here:
+#   chezmoi applies ~/.config/* FILES after all .chezmoiscripts/* (`.config`
+#   sorts after `.chezmoiscripts` in target-path order), so
+#   ~/.config/bwssh/config.toml is NOT on disk yet at position 31. The daemon
+#   needs it (item_ids, bw_path) to load keys, so we render it from the source
+#   template now via `chezmoi cat`. chezmoi writes the same file again in the
+#   .config phase — idempotent, no harm.
+#
+# run_every: re-checks every apply because the vault lock state varies (it
+# locks on sleep). LaunchAgent/systemd *persistence* across reboots is handled
+# separately by run_onchange_after_81-bwssh-agent.sh.tmpl; this gate only
+# guarantees readiness for the current apply.
+set -eu
+
+# bwssh not installed yet (e.g. run_30 mise install failed/skipped) → nothing to do.
+command -v bwssh   >/dev/null 2>&1 || { echo "[bwssh-ensure] bwssh not on PATH (run_30 mise install?) — skipping" >&2; exit 0; }
+command -v chezmoi >/dev/null 2>&1 || exit 0
+
+# 1. Materialize the bwssh config (rendered from source; .config/* applies after scripts).
+mkdir -p "$HOME/.config/bwssh"
+if chezmoi cat "$HOME/.config/bwssh/config.toml" > "$HOME/.config/bwssh/config.toml.tmp" 2>/dev/null; then
+  mv "$HOME/.config/bwssh/config.toml.tmp" "$HOME/.config/bwssh/config.toml"
+else
+  rm -f "$HOME/.config/bwssh/config.toml.tmp"
+fi
+
+# 2. Start the daemon if it isn't running (idempotent; portable — no plist/systemd dependency).
+if ! bwssh status >/dev/null 2>&1; then
+  echo "[bwssh-ensure] bwssh daemon down — starting" >&2
+  bwssh start >/dev/null 2>&1 || true
+fi
+
+# 3. Wait for the agent socket to come up (bwssh-agentd is a Python daemon; ~5s budget).
+i=0
+while ! bwssh status >/dev/null 2>&1 && [ "$i" -lt 50 ]; do
+  i=$((i + 1))
+  sleep 0.1
+done
+
+# 4. Unlock the vault if locked (SSH consumers need keys in memory).
+#    Exact-match the state value: 'unlocked' CONTAINS the substring 'locked',
+#    so a naive `grep locked` would misfire on the unlocked state.
+state=$(bwssh status 2>/dev/null | awk '/^State:/ {print $2; exit}')
+case "${state:-unknown}" in
+  locked)
+    if [ -t 0 ]; then
+      echo "[bwssh-ensure] vault locked — unlocking (enter Bitwarden master password)" >&2
+      bwssh unlock || echo "[bwssh-ensure] unlock failed — SSH steps may fail" >&2
+    else
+      echo "[bwssh-ensure] WARNING: vault locked, no TTY — run 'bwssh unlock' (and 'bw login' first on a fresh machine)" >&2
+    fi
+    ;;
+  unlocked)
+    # nothing to do
+    ;;
+  *)
+    echo "[bwssh-ensure] unknown bwssh state '${state:-<empty>}' — leaving as-is" >&2
+    ;;
+esac
