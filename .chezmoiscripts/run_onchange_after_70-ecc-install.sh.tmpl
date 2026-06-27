@@ -1,16 +1,22 @@
 #!/usr/bin/env bash
 # Manage ecc (https://github.com/affaan-m/ecc) via chezmoi.
-# Re-runs whenever ecc.version changes (version is embedded below). Idempotent.
-# version={{ .ecc.version }} profile={{ .ecc.profile }}
+# Registers ecc as a local Claude Code plugin (~/.local/share/ecc) so its full
+# skill/agent/command/hook set loads through the plugin system (install-apply's flat
+# copies don't — see ~/.claude/plans). Re-runs whenever ecc.version changes (version is
+# embedded below). Idempotent.
+# version={{ .ecc.version }}
 set -euo pipefail
 
 ECC_SRC="$HOME/.local/share/ecc"
 ECC_VERSION="{{ .ecc.version }}"
-ECC_PROFILE="{{ .ecc.profile }}"
 
-# ecc's installer needs node (mise-managed on this machine). Skip gracefully if absent.
+# ecc's tooling and the claude CLI are mise-managed on this machine. Skip gracefully if absent.
 if ! command -v node >/dev/null 2>&1; then
   echo "[ecc] node not found on PATH — skipping install." >&2
+  exit 0
+fi
+if ! command -v claude >/dev/null 2>&1; then
+  echo "[ecc] claude CLI not found on PATH — skipping plugin registration." >&2
   exit 0
 fi
 
@@ -26,8 +32,25 @@ cd "$ECC_SRC"
 git fetch --tags --quiet
 git checkout --quiet --force "$ECC_VERSION"
 
-# Install node deps (idempotent), then run ecc's non-interactive installer into ~/.claude.
+# Hooks may run scripts that need node deps; keep them installed (idempotent, cheap insurance).
 npm install --no-audit --no-fund --loglevel=error
-node scripts/install-apply.js --target claude --profile "$ECC_PROFILE"
 
-echo "[ecc] installed $ECC_VERSION (profile=$ECC_PROFILE) into ~/.claude"
+# Register ecc as a local Claude Code plugin. Idempotent: re-add / re-install when already
+# present are no-ops (tolerate their exit codes). Also declared in ~/.claude/settings.json.
+set +e
+claude plugin marketplace add "$ECC_SRC" --scope user
+claude plugin install ecc@ecc --scope user
+set -e
+
+# Rules: the plugin ships skills/commands/agents/hooks but NOT rules. ecc's rules live in
+# the repo; symlink them so ~/.claude/rules/ecc keeps loading the coding standards.
+rm -rf "$HOME/.claude/rules/ecc"
+mkdir -p "$HOME/.claude/rules"
+ln -s "$ECC_SRC/rules" "$HOME/.claude/rules/ecc"
+
+# Dedupe: install-apply (removed above) used to copy commands/agents/skills flat into
+# ~/.claude, which collided with the plugin. Drop the stale flat copies — verified 100%
+# ecc-owned. Personal content belongs in chezmoi source, not these dirs.
+rm -rf "$HOME/.claude/commands" "$HOME/.claude/agents" "$HOME/.claude/skills/ecc"
+
+echo "[ecc] registered plugin ecc@ecc $ECC_VERSION; rules symlinked; flat copies removed"

@@ -19,13 +19,20 @@
     "plannotator@plannotator": true,
     "superpowers@claude-plugins-official": true,
     "chrome-devtools-mcp@claude-plugins-official": true,
-    "gopls-lsp@claude-plugins-official": true
+    "gopls-lsp@claude-plugins-official": true,
+    "ecc@ecc": true
   },
   "extraKnownMarketplaces": {
     "plannotator": {
       "source": {
         "source": "github",
         "repo": "backnotprop/plannotator"
+      }
+    },
+    "ecc": {
+      "source": {
+        "source": "directory",
+        "path": "/Users/raincore/.local/share/ecc"
       }
     }
   },
