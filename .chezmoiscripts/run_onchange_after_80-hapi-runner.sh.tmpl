@@ -26,10 +26,20 @@ fi
 # Log directory the plist's StandardOutPath / StandardErrorPath write to.
 mkdir -p "$HOME/Library/Logs/hapi-runner"
 
-# Bootout any previously-loaded (possibly stale) instance FIRST, so launchd
-# adopts the latest plist. bootout returns non-zero when nothing is loaded —
-# that is expected, so swallow it.
-launchctl bootout "$DOMAIN/$LABEL" 2>/dev/null || true
+# If the agent is already loaded, unload it FIRST and wait for launchd to
+# actually deregister it before re-loading. `bootout` returns before teardown
+# completes, so bootstrapping immediately can race the deregistration and fail
+# with "Bootstrap failed: 5: Input/output error". Polling until `print` reports
+# the service gone closes that window (same guard as the bwssh-agent loader).
+if launchctl print "$DOMAIN/$LABEL" >/dev/null 2>&1; then
+  launchctl bootout "$DOMAIN/$LABEL" 2>/dev/null || true
+  i=0
+  while launchctl print "$DOMAIN/$LABEL" >/dev/null 2>&1 && [ "$i" -lt 20 ]; do
+    i=$((i + 1))
+    sleep 0.2
+  done
+fi
+
 launchctl bootstrap "$DOMAIN" "$PLIST"
 # Re-enable in case it was disabled via `launchctl disable`.
 launchctl enable "$DOMAIN/$LABEL"
