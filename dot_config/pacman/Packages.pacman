@@ -2,6 +2,7 @@
 # Installed idempotently by run_once_after_11-restore-pacman.sh.tmpl.
 # Format: <pkg> # <note>.  One package per line; text after '#' is a comment.
 atuin            # shell history for zsh/bash/fish
+base-devel       # make + gcc + build tools — needed to compile mise tools (lua, ruby) from source
 bat              # cat(1) with syntax highlighting + git integration
 bitwarden-cli    # Bitwarden password manager CLI
 bottom           # cross-platform process/system monitor (btm)

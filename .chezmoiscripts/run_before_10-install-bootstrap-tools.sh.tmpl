@@ -58,4 +58,11 @@ if [ ! -f "$_mise_toml" ] && command -v chezmoi >/dev/null 2>&1; then
     rm -f "$_mise_toml.tmp"
   fi
 fi
-mise install --yes || echo "[bootstrap] mise install (bwssh) failed" >&2
+# Install ONLY the SSH-critical chain here. A bare `mise install` would also try
+# to build lua 5.1 via the vfox-lua plugin, which compiles from source and needs
+# make/gcc (base-devel) - absent in this before_ phase (base-devel is restored
+# later by run_once_after_11). The full toolset is installed by
+# run_once_after_30 once the toolchain exists. python first (prebuilt, no compile)
+# so the pipx backend has an interpreter for bwssh.
+mise install --yes python || true
+mise install --yes pipx:bwssh || echo "[bootstrap] mise install (bwssh) failed" >&2
