@@ -1,7 +1,7 @@
 # 新机器从零引导（Bootstrap）
 
 > 目标：在一台干净的 macOS / Linux 上，用**一次** `chezmoi init --apply` 把整套环境拉起来。
-> 前置脚本 `run_before_10` / `run_before_20` 会自动安装 mise / bw / bwssh、启动 bwssh、
+> 前置脚本 `run_once_before_10` / `run_onchange_before_20` 会自动安装 mise / bw / bwssh、启动 bwssh、
 > 提示登录解锁、clone SSH externals——**无需手动分步操作**。
 
 ## 最小手动步骤（仅这 4 步必须人工）
@@ -57,6 +57,7 @@ chezmoi init --apply 2017fighting
 3. **主密码可能被问两次**：`bw login` 之后 bwssh 有独立的 session，可能再 `bwssh unlock` 一次。提前备好主密码。
 4. **首次 apply 偶发某个 SSH external clone 失败就直接重跑**：bwssh 就绪轮询已砍到 5 次，极少数情况下首个 SSH clone 会与 daemon 就绪竞态。整套脚本幂等，直接 `chezmoi apply` 再跑即可（`run_once_*` 失败不会标记为已执行）。
 5. **init 时会问 name / email / workName / workEmail / sshPubKey**：都有默认值，回车即可（`.chezmoi.yaml.tmpl` 的 `promptStringOnce`）。
+6. **`before_20` 现为 `run_onchange_`，不会每次 apply 都跑**：它只在首次（或脚本内容变化时）执行，所以 bwssh daemon 挂掉 / vault 重新锁定后，后续 `chezmoi apply` 不会自动恢复——external SSH clone 会失败。手动 `bwssh start && bwssh unlock` 后重跑 apply 即可。
 
 ## apply 之后自检
 

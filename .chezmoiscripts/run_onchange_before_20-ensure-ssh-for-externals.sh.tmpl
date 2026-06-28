@@ -1,6 +1,11 @@
 #!/bin/sh
-# Phase: before_  (after run_before_10). Guarantee SSH readiness before the
+# Phase: before_  (after run_once_before_10). Ensure SSH readiness before the
 # normal-phase external clones (nvim, oh-my-zsh + plugins, oh-my-tmux, ecc).
+#
+# Trigger: run_onchange_ -- runs ONCE, then only when THIS script's content
+# changes. It does NOT re-run when the bwssh daemon dies or the vault re-locks
+# (ephemeral states no file hash captures). If a later `chezmoi apply` fails on
+# an external SSH clone, run `bwssh start && bwssh unlock`, then re-apply.
 #
 # Key delivery is file-based: chezmoi's external-clone git inherits chezmoi's
 # process env, which this child script CANNOT mutate. So we depend on

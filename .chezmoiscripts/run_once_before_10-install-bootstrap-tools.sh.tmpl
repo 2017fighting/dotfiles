@@ -1,5 +1,7 @@
 #!/bin/sh
 # Phase: before_  (runs BEFORE file writes + .chezmoiexternals SSH clones).
+# Trigger: run_once_ -- installs the SSH-critical chain once per machine, then
+# never again (it self-guards via `command -v bwssh` anyway).
 # Install the minimal chain bwssh needs to serve SSH keys for the external clones
 # later in the normal phase:
 #   bitwarden-cli (bw)  <- bwssh shells out to `bw`

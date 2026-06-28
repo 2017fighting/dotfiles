@@ -278,7 +278,7 @@ prettier --write path/to/file
 
 - `dot_zshrc` → `~/.zshrc`
 - `private_dot_ssh/encrypted_config.age` → `~/.ssh/config` (encrypted)
-- `run_once_before_20-restore-homebrew.sh.tmpl` → runs once, before apply, order 20
+- `run_once_before_10-install-bootstrap-tools.sh.tmpl` → runs once, before apply, order 10
 - `executable_dot_local/bin/my-script` → `~/.local/bin/my-script` (executable)
 
 ## Error Handling
