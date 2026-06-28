@@ -1,0 +1,55 @@
+#!/bin/sh
+# Let sshd receive SSH_CLIENT_TMUX from clients (SendEnv). This is the server
+# half of "skip remote tmux when the client is already in tmux": the client's
+# ~/.zshrc exports SSH_CLIENT_TMUX=1 inside tmux, ~/.ssh/config sends it, and
+# the remote ~/.zshrc skips tmux autostart when it arrives. See dot_zshrc.tmpl.
+#
+# Linux only — macOS is the ssh client here, never the target server. Idempotent:
+# no-op when the line is already present. Appends one line, validates with
+# `sshd -t`, then reloads sshd (SIGHUP re-reads config; existing sessions are
+# NOT dropped). As with scripts 11/12, sudo is used directly so an interactive
+# `chezmoi apply` reuses the sudo cache warmed earlier in the same run. With no
+# TTY we skip with a message instead of hanging on a password prompt; root needs
+# neither sudo nor a TTY.
+{{ if eq .chezmoi.os "linux" }}
+
+SSHD_CFG=/etc/ssh/sshd_config
+
+# No sshd server config on this host (desktop / minimal install)? Nothing to do.
+[ -f "$SSHD_CFG" ] || exit 0
+
+# Already accepting SSH_CLIENT_TMUX? Nothing to do.
+if grep -Eq '^[[:space:]]*AcceptEnv[[:space:]]+SSH_CLIENT_TMUX($|[[:space:]])' "$SSHD_CFG"; then
+  exit 0
+fi
+
+# Decide how to elevate. Root writes/reloads directly; anyone else needs sudo,
+# which needs a TTY for the password prompt.
+if [ "$(id -u)" = 0 ]; then
+  SUDO=""
+elif [ ! -t 0 ]; then
+  echo "[sshd] no TTY — run manually:" >&2
+  echo "[sshd]   echo 'AcceptEnv SSH_CLIENT_TMUX' | sudo tee -a $SSHD_CFG && sudo systemctl reload sshd" >&2
+  exit 0
+else
+  SUDO="sudo"
+fi
+
+SSHD_BIN="$(command -v sshd 2>/dev/null || echo /usr/sbin/sshd)"
+
+echo "[sshd] adding 'AcceptEnv SSH_CLIENT_TMUX' to $SSHD_CFG"
+printf '\n# accept client tmux state (sent via SendEnv); see dot_zshrc.tmpl\nAcceptEnv SSH_CLIENT_TMUX\n' \
+  | $SUDO tee -a "$SSHD_CFG" >/dev/null \
+  || { echo "[sshd] failed to write $SSHD_CFG (sudo needed)." >&2; exit 0; }
+
+# Validate before reloading so we never leave sshd pointed at a broken config.
+if ! $SUDO "$SSHD_BIN" -t 2>/dev/null; then
+  echo "[sshd] '$SSHD_BIN -t' failed — NOT reloading. Inspect $SSHD_CFG." >&2
+  exit 0
+fi
+
+# Reload (SIGHUP). sshd.service on Arch; fall back to the explicit name.
+$SUDO systemctl reload sshd 2>/dev/null \
+  || $SUDO systemctl reload sshd.service 2>/dev/null \
+  || echo "[sshd] reload failed — run 'sudo systemctl reload sshd' manually." >&2
+{{ end }}
