@@ -46,4 +46,5 @@ wget             # internet file retriever
 yazi             # terminal file manager
 yq               # YAML/JSON/XML/CSV processor
 zoxide           # smarter cd
+zsh              # Z shell — login shell; base for oh-my-zsh / ~/.zshrc
 android-tools    # adb, fastboot  [brew cask: android-platform-tools]

@@ -1,0 +1,48 @@
+#!/bin/sh
+# Set the login shell to zsh on Linux. zsh itself is installed by
+# run_once_after_11-restore-pacman.sh.tmpl (from Packages.pacman); this script runs
+# right after it (after_ phase, ordered 11 -> 12) so /usr/bin/zsh exists by the time
+# we get here.
+#
+# Idempotent: no-op when the login shell is already zsh. chsh requires the target
+# shell to be listed in /etc/shells, so we ensure that first (sudo). The chsh itself
+# is run via sudo too: it rides the sudo credential cache warmed by script 11's
+# pacman loop in the same apply, so an interactive `chezmoi apply` prompts only once.
+# With no TTY (non-interactive apply) we skip with a message instead of hanging on a
+# password prompt. macOS is skipped — its default shell is already zsh and is managed
+# via System Settings, not here.
+{{ if eq .chezmoi.os "linux" }}
+
+# Already zsh? Nothing to do. ($SHELL reflects the login shell from /etc/passwd.)
+case "$SHELL" in
+  */zsh) exit 0 ;;
+esac
+
+# zsh not installed yet (pacman restore skipped or failed)? Bail gracefully — the
+# next apply after `sudo pacman -S zsh` will pick it up.
+ZSH_PATH="$(command -v zsh 2>/dev/null || true)"
+if [ -z "$ZSH_PATH" ]; then
+  echo "[shell] zsh not on PATH — install it ('sudo pacman -S zsh'), then re-run 'chezmoi apply'." >&2
+  exit 0
+fi
+
+# chsh refuses a shell missing from /etc/shells; ensure ours is listed. No-op if
+# the zsh package already appended it.
+if ! grep -qxF "$ZSH_PATH" /etc/shells 2>/dev/null; then
+  printf '%s\n' "$ZSH_PATH" | sudo tee -a /etc/shells >/dev/null \
+    || { echo "[shell] could not add $ZSH_PATH to /etc/shells (sudo needed)." >&2; exit 0; }
+fi
+
+# A non-interactive shell can't satisfy the sudo prompt — skip cleanly rather than
+# hang. The user runs 'chsh -s <path>' manually, or re-runs apply from a real TTY.
+if [ ! -t 0 ]; then
+  echo "[shell] no TTY — run 'chsh -s $ZSH_PATH' manually to set the login shell." >&2
+  exit 0
+fi
+
+echo "[shell] setting login shell to $ZSH_PATH for $USER"
+# Root (via sudo) changes the entry directly; chsh does not prompt for the target
+# user's password in this mode, so only the sudo password is needed.
+sudo chsh -s "$ZSH_PATH" "$USER" \
+  || echo "[shell] chsh failed — run 'chsh -s $ZSH_PATH' manually." >&2
+{{ end }}
