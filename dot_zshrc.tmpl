@@ -118,12 +118,23 @@ export FZF_DEFAULT_OPTS=" \
 
 # Disable tmux autostart in non-TTY/nested/managed environments.
 # This prevents startup loops for tool-driven shells.
-if [[ "$TERM_PROGRAM" == "vscode" ]] || [[ -n "$TMUX" ]] || [[ ! -t 0 ]] || [[ ! -t 1 ]]; then
+# SSH_CLIENT_TMUX=1 arrives over ssh (SendEnv/AcceptEnv) when the *client* is
+# already inside tmux, so skip autostart to avoid nested tmux on the remote.
+if [[ "$TERM_PROGRAM" == "vscode" ]] || [[ -n "$TMUX" ]] || [[ "$SSH_CLIENT_TMUX" == "1" ]] || [[ ! -t 0 ]] || [[ ! -t 1 ]]; then
     export ZSH_TMUX_AUTOSTART=false
     export ZSH_TMUX_AUTOCONNECT=false
 else
     export ZSH_TMUX_AUTOSTART=true
     export ZSH_TMUX_AUTOCONNECT=true
+fi
+
+# Propagate local tmux state to remote shells over ssh (consumed by the gate
+# above on the remote host; see SendEnv in ~/.ssh/config). Exported so ssh can
+# forward it; harmless on hosts that don't AcceptEnv it.
+if [[ -n "$TMUX" ]]; then
+    export SSH_CLIENT_TMUX=1
+else
+    unset SSH_CLIENT_TMUX
 fi
 export ZSH_COMPDUMP=$ZSH/cache/.zcompdump-$HOST
 
