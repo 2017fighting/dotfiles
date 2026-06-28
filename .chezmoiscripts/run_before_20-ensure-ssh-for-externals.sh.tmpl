@@ -1,0 +1,76 @@
+#!/bin/sh
+# Phase: before_  (after run_before_10). Guarantee SSH readiness before the
+# normal-phase external clones (nvim, oh-my-zsh + plugins, oh-my-tmux, ecc).
+#
+# Key delivery is file-based: chezmoi's external-clone git inherits chezmoi's
+# process env, which this child script CANNOT mutate. So we depend on
+# IdentityAgent in ~/.ssh/config (added to the ssh config source), read directly by
+# ssh. We still materialize ~/.ssh/config + known_hosts here because the early
+# externals (.config/*, .oh-my-zsh, .local/*) sort BEFORE .ssh and would otherwise
+# hit a missing-config / unknown-host failure.
+set -eu
+
+_ms="${MISE_DATA_DIR:-$HOME/.local/share/mise}/shims"
+[ -d "$_ms" ] && case ":$PATH:" in *":$_ms:"*) ;; *) PATH="$_ms:$PATH"; export PATH ;; esac
+unset _ms
+
+command -v bwssh   >/dev/null 2>&1 || { echo "[ssh-ensure] bwssh not on PATH - skipping" >&2; exit 0; }
+command -v chezmoi >/dev/null 2>&1 || exit 0
+
+# Materialize a chezmoi-managed file early (atomic temp+mv; avoids partial writes
+# and shellcheck SC2094). $1 = target path whose source exists; $2 = optional chmod.
+materialize() {
+  _dst="$1"; _tmp="$_dst.tmp"
+  if chezmoi cat "$_dst" > "$_tmp" 2>/dev/null; then
+    mv "$_tmp" "$_dst"; [ -n "${2:-}" ] && chmod "$2" "$_dst"
+  else
+    rm -f "$_tmp"
+  fi
+}
+
+# 1. bwssh config (normal-phase file, not on disk yet).
+mkdir -p "$HOME/.config/bwssh"
+materialize "$HOME/.config/bwssh/config.toml"
+
+# 2. ~/.ssh/config (carries IdentityAgent) + known_hosts EARLY.
+mkdir -p "$HOME/.ssh"; chmod 700 "$HOME/.ssh"
+materialize "$HOME/.ssh/config" 600
+materialize "$HOME/.ssh/known_hosts" 600
+
+# 3. Start bwssh daemon if down (portable; no plist/systemd dependency).
+if ! bwssh status >/dev/null 2>&1; then
+  echo "[ssh-ensure] bwssh daemon down - starting" >&2
+  bwssh start >/dev/null 2>&1 || true
+fi
+i=0
+while ! bwssh status >/dev/null 2>&1 && [ "$i" -lt 50 ]; do i=$((i + 1)); sleep 0.1; done
+
+# 4. Ensure `bw` is logged in (fresh machine), then unlock the vault.
+if command -v bw >/dev/null 2>&1; then
+  bw_status="$(bw status 2>/dev/null | sed -n 's/.*"status":"\([^"]*\)".*/\1/p' | head -n1 || true)"
+  case "${bw_status:-unknown}" in
+    unauthenticated)
+      if [ -t 0 ]; then
+        echo "[ssh-ensure] bw not logged in - running 'bw login'" >&2
+        bw login || echo "[ssh-ensure] bw login failed - external SSH clones may fail" >&2
+      else
+        echo "[ssh-ensure] bw not logged in and no TTY - run 'bw login' first" >&2
+      fi
+      ;;
+  esac
+fi
+
+# 5. Unlock the vault if locked. Exact-match 'locked' ('unlocked' contains 'locked').
+state=$(bwssh status 2>/dev/null | awk '/^State:/ {print $2; exit}')
+case "${state:-unknown}" in
+  locked)
+    if [ -t 0 ]; then
+      echo "[ssh-ensure] vault locked - unlocking (enter Bitwarden master password)" >&2
+      bwssh unlock || echo "[ssh-ensure] unlock failed - external SSH clones may fail" >&2
+    else
+      echo "[ssh-ensure] vault locked, no TTY - run 'bwssh unlock'" >&2
+    fi
+    ;;
+  unlocked) ;;
+  *) echo "[ssh-ensure] unknown bwssh state '${state:-<empty>}' - leaving as-is" >&2 ;;
+esac

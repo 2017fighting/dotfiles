@@ -1,0 +1,61 @@
+#!/bin/sh
+# Phase: before_  (runs BEFORE file writes + .chezmoiexternals SSH clones).
+# Install the minimal chain bwssh needs to serve SSH keys for the external clones
+# later in the normal phase:
+#   bitwarden-cli (bw)  <- bwssh shells out to `bw`
+#   mise               <- installs bwssh (pipx:bwssh) and provides shims
+# bwssh itself is installed by `mise install` at the bottom.
+#
+# Fast-exit: once bwssh is on PATH this is a no-op on later applies. The full
+# package set (Brewfile / Packages.pacman) is still restored by the after_ scripts
+# (run_once_after_10/11); this script only guarantees the SSH-critical tools early.
+set -eu
+
+# mise shims on PATH: mise activates only via the oh-my-zsh 'mise' plugin, which is
+# not loaded during a non-interactive apply.
+add_mise_shims() {
+  _ms="${MISE_DATA_DIR:-$HOME/.local/share/mise}/shims"
+  [ -d "$_ms" ] || return 0
+  case ":$PATH:" in *":$_ms:"*) ;; *) PATH="$_ms:$PATH"; export PATH ;; esac
+}
+add_mise_shims
+
+# Fast-exit: bwssh already installed.
+command -v bwssh >/dev/null 2>&1 && exit 0
+
+{{ if eq .chezmoi.os "darwin" -}}
+# macOS - Homebrew (brew is the one manual pre-req; it cannot bootstrap itself).
+if ! command -v brew >/dev/null 2>&1; then
+  echo "[bootstrap] Homebrew not found - install from https://brew.sh, then re-run 'chezmoi apply'." >&2
+  exit 0
+fi
+brew install bitwarden-cli mise
+{{ else if eq .chezmoi.os "linux" -}}
+# Arch / WSL - pacman (pre-installed). sudo may prompt.
+if command -v pacman >/dev/null 2>&1; then
+  sudo pacman -S --needed --noconfirm bitwarden-cli mise >/dev/null 2>&1 \
+    || echo "[bootstrap] pacman install (bitwarden-cli/mise) failed" >&2
+else
+  echo "[bootstrap] pacman not found - install bitwarden-cli + mise manually." >&2
+fi
+{{ else -}}
+echo "[bootstrap] unsupported OS {{ .chezmoi.os }} - skipping" >&2
+exit 0
+{{ end -}}
+
+# Re-add shims (mise install dir may have just appeared).
+add_mise_shims
+
+# Install bwssh via mise. Materialize mise.toml first - it's a normal-phase file,
+# not on disk yet during before_.
+command -v mise >/dev/null 2>&1 || { echo "[bootstrap] mise not on PATH - bwssh not installed" >&2; exit 0; }
+_mise_toml="$HOME/.config/mise/mise.toml"
+if [ ! -f "$_mise_toml" ] && command -v chezmoi >/dev/null 2>&1; then
+  mkdir -p "$(dirname "$_mise_toml")"
+  if chezmoi cat "$_mise_toml" > "$_mise_toml.tmp" 2>/dev/null; then
+    mv "$_mise_toml.tmp" "$_mise_toml"
+  else
+    rm -f "$_mise_toml.tmp"
+  fi
+fi
+mise install --yes || echo "[bootstrap] mise install (bwssh) failed" >&2
