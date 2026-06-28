@@ -37,3 +37,44 @@ cd:
 init:
 	chezmoi init
 
+# 校验 SSH/bwssh 链路是否就绪：bwssh 守护进程 + vault 解锁 + GitHub 能用 key 认证 + SSH externals 已 clone。
+# 退出码非 0 表示有检查未通过（可用于 apply 后自检 / CI gate）。
+[group('verify')]
+doctor:
+	#!/usr/bin/env sh
+	set -u
+	ok=0
+	pass() { printf '  \033[32m✓\033[0m %s\n' "$1"; }
+	fail() { printf '  \033[31m✗\033[0m %s\n' "$1"; ok=1; }
+	hdr() { printf '\n== %s ==\n' "$1"; }
+
+	hdr "bwssh"
+	if command -v bwssh >/dev/null 2>&1; then
+	  pass "bwssh on PATH"
+	  # bwssh status 是 ~2.6s 的 python 冷启动，只调用一次
+	  out="$(bwssh status 2>&1)"; rc=$?
+	  if [ "$rc" -eq 0 ]; then pass "daemon running"; else fail "daemon down (run: bwssh start)"; fi
+	  state="$(printf '%s\n' "$out" | awk '/^State:/ {print $2; exit}')"
+	  case "${state:-unknown}" in
+	    unlocked) pass "vault unlocked" ;;
+	    locked) fail "vault locked (run: bwssh unlock)" ;;
+	    *) fail "unknown bwssh state '${state:-<empty>}'" ;;
+	  esac
+	else
+	  fail "bwssh NOT on PATH (run: mise install)"
+	fi
+
+	hdr "github ssh key"
+	if ssh -T -o BatchMode=yes -o ConnectTimeout=10 -o StrictHostKeyChecking=accept-new git@github.com 2>&1 | grep -q 'Hi '; then
+	  pass "served key authenticates to GitHub"
+	else
+	  fail "GitHub SSH auth failed (key not served / vault locked)"
+	fi
+
+	hdr "ssh externals"
+	for d in "$HOME/.oh-my-zsh" "$HOME/.config/nvim" "$HOME/.tmux"; do
+	  if [ -d "$d/.git" ]; then pass "cloned: $d"; else fail "missing: $d (chezmoi apply --refresh-externals)"; fi
+	done
+
+	exit "$ok"
+

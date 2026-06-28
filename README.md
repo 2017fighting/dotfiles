@@ -13,19 +13,11 @@
 
 ## 恢复流程
 
-1. 安装科学上网工具
-2. 安装chezmoi(以mac为例)
-   1. 安装homebrew，`/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`
-   2. 使用homebrew安装chezmoi和bitwarden，`brew install chezmoi`
-3. 取得ssh私钥(以mac为例)
-   1. 适用homebrew安装bitwarden，`brew install bitwarden`
-   2. 登陆bitwarden，并开启ssh-agent功能
-   3. 设置bitwarden为ssh-agent，`export SSH_AUTH_SOCK=$HOME/.bitwarden-ssh-agent.sock`，确保能clone仓库，测试`ssh -T git@github.com`
-4. 取得age解密私钥，存放到`~/.config/chezmoi/key.txt`
-5. `chezmoi init --apply 2017fighting`
-   1. scripts.run_onchange_before: `.BrewFile变化时执行`，从BrewFile还原软件包(包含密钥管理工具)
-   <!-- 2. scripts.run_onchange_before: 从密钥管理工具获取密钥，存放到`.config/chezmoi/key.txt` -->
-   1. scripts.run_onchange_after: 还原MacOS系统设置
+新机器的完整引导步骤（含 mise/bwssh 自动化与坑）见 **[BOOTSTRAP.md](./BOOTSTRAP.md)**。
+
+简要来说只需 4 步：放好 `~/.config/chezmoi/key.txt` → 安装 chezmoi →（mac）安装 Homebrew → `chezmoi init --apply 2017fighting`。`run_before_10` / `run_before_20` 会自动完成 mise / bitwarden-cli / bwssh 的安装、bwssh 启动与登录解锁、以及 SSH externals（oh-my-zsh、nvim、oh-my-tmux）的 clone。
+
+apply 完成后可用 `just doctor` 自检 SSH/bwssh 链路是否就绪。
 
 ## 特殊文件/文件夹
 >

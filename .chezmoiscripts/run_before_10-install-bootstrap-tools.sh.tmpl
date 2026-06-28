@@ -26,7 +26,19 @@ command -v bwssh >/dev/null 2>&1 && exit 0
 {{ if eq .chezmoi.os "darwin" -}}
 # macOS - Homebrew (brew is the one manual pre-req; it cannot bootstrap itself).
 if ! command -v brew >/dev/null 2>&1; then
-  echo "[bootstrap] Homebrew not found - install from https://brew.sh, then re-run 'chezmoi apply'." >&2
+  echo "" >&2
+  echo "===========================================================" >&2
+  echo "[bootstrap] Homebrew NOT found - SSH bootstrap chain SKIPPED." >&2
+  echo "[bootstrap] Without brew this script cannot install mise/bw/bwssh," >&2
+  echo "[bootstrap] so the SSH externals (oh-my-zsh, nvim, oh-my-tmux) will" >&2
+  echo "[bootstrap] FAIL to clone later in this apply." >&2
+  echo "[bootstrap] Fix: install Homebrew, then re-run 'chezmoi apply':" >&2
+  echo "[bootstrap]   /bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\"" >&2
+  echo "===========================================================" >&2
+  echo "" >&2
+  # Non-fatal (lifecycle scripts tolerate partial failure): let the non-SSH
+  # parts of this apply still proceed. Re-running after installing brew is
+  # idempotent - before_10 fast-exits once bwssh is on PATH.
   exit 0
 fi
 brew install bitwarden-cli mise
