@@ -42,12 +42,17 @@ materialize "$HOME/.ssh/config" 600
 materialize "$HOME/.ssh/known_hosts" 600
 
 # 3. Start bwssh daemon if down (portable; no plist/systemd dependency).
+# Readiness poll is capped at a FEW tries, not 50: each `bwssh status` is a
+# ~2.6s Python cold-start, so 50 iterations burned ~130s on every apply. And
+# with socket-activated bwssh (Arch), status stays non-zero until a client
+# connects - a long poll buys nothing there. `bwssh start` already waits for
+# systemd to ack, so a handful of polls is enough async-startup slack.
 if ! bwssh status >/dev/null 2>&1; then
   echo "[ssh-ensure] bwssh daemon down - starting" >&2
   bwssh start >/dev/null 2>&1 || true
 fi
 i=0
-while ! bwssh status >/dev/null 2>&1 && [ "$i" -lt 50 ]; do i=$((i + 1)); sleep 0.1; done
+while ! bwssh status >/dev/null 2>&1 && [ "$i" -lt 5 ]; do i=$((i + 1)); sleep 0.1; done
 
 # 4. Ensure `bw` is logged in (fresh machine), then unlock the vault.
 if command -v bw >/dev/null 2>&1; then
