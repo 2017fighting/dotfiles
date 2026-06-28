@@ -19,6 +19,9 @@ command -v chezmoi >/dev/null 2>&1 || exit 0
 
 # Materialize a chezmoi-managed file early (atomic temp+mv; avoids partial writes
 # and shellcheck SC2094). $1 = target path whose source exists; $2 = optional chmod.
+# NOTE: `return 0` is load-bearing under `set -e` - without it, a 1-arg call
+# (no chmod) leaves `[ -n "${2:-}" ] && chmod` as the last statement, which
+# returns 1 when $2 is empty, killing the whole script at the call site.
 materialize() {
   _dst="$1"; _tmp="$_dst.tmp"
   if chezmoi cat "$_dst" > "$_tmp" 2>/dev/null; then
@@ -26,6 +29,7 @@ materialize() {
   else
     rm -f "$_tmp"
   fi
+  return 0
 }
 
 # 1. bwssh config (normal-phase file, not on disk yet).
