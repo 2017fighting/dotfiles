@@ -1,0 +1,46 @@
+# 需要服务器上也安装了rsync，废弃
+# Shared sync recipe. Import from project justfiles:
+#   import '~/.config/just/sync.just'
+# Project justfile must define `project_path`.
+
+dry_run := env("DRY_RUN", "true")
+rsync_opts := "-avh --info=progress2" + (if dry_run == "true" { " --dry-run" } else { "" })
+
+# Sync a subdirectory under {{ project_path }}/ to a remote host.
+# Usage: just _sync <dir> <host>
+_sync dir host:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    log_file=$(mktemp)
+    trap 'rm -f "$log_file"' EXIT
+
+    src="{{ project_path }}/{{ dir }}/"
+    dst="{{ host }}:{{ project_path }}/{{ dir }}/"
+
+    echo "==> Syncing $src -> $dst"
+
+    rsync {{ rsync_opts }} \
+        --out-format='%i %n' \
+        "$src" "$dst" \
+        | tee "$log_file"
+
+    echo
+
+    synced=$(
+        awk '
+            # rsync itemize 输出，以 > 开头表示会传输文件
+            /^>/ { print substr($0, index($0, " ") + 1) }
+        ' "$log_file" | sort -u
+    )
+
+    if [ -n "$synced" ]; then
+        if [ "{{ dry_run }}" = "true" ]; then
+            echo "==> Would sync:"
+        else
+            echo "==> Synced:"
+        fi
+        printf '  %s\n' "$synced"
+    else
+        echo "==> Nothing to sync."
+    fi
