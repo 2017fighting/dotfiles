@@ -30,7 +30,8 @@ claude = "latest"
 "pipx:bwssh" = "latest"
 "copier" = "latest"
 # github
-"github:backnotprop/plannotator" = "latest"
+# "github:backnotprop/plannotator" = "latest"
+"github:saladday/cc-switch-cli" = "latest"
 # uv
 # "uv:serena" = "latest"
 # npm
@@ -40,7 +41,6 @@ claude = "latest"
 "npm:@colbymchenry/codegraph" = "latest"
 "npm:chrome-devtools-mcp" = "latest"
 "npm:skills" = "latest"
-"github:saladday/cc-switch-cli" = "latest"
 
 [settings]
 # tools can read the versions files used by other version managers
