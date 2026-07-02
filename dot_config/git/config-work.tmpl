@@ -2,3 +2,6 @@
     name = {{ .user.workName }}
     email = {{ .user.workEmail }}
 
+[core]
+    excludesFile = {{ .chezmoi.homeDir }}/.config/git/ignore-work
+
