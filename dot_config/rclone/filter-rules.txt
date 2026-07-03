@@ -25,7 +25,6 @@
 - *.pyd
 
 - .pytest_cache/**
-- test*.py
 - .ruff_cache/**
 - .mypy_cache/**
 - .tox/**
@@ -66,7 +65,7 @@
 # Logs
 # =========================
 
-- *.log
+- **/*.log
 - logs/**
 - coverage/**
 - htmlcov/**
@@ -82,7 +81,7 @@
 - *.exe
 - *.mp4
 - *.pyc
-- *.xml
+- **/*.xml
 - *.pdf
 - *.png
 
