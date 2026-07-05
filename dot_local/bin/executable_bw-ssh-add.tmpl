@@ -1,0 +1,72 @@
+#!/bin/sh
+# bw-ssh-add — unlock the Bitwarden vault via the bw CLI and load the SSH
+# private key(s) into the system ssh-agent. Stateless: nothing is written to
+# disk (no BW_SESSION persisted). Re-running once a key is loaded is a no-op;
+# pass --force to reload.
+#
+# Item ids come from .chezmoidata.yaml (ssh.keyItemIds), rendered below.
+set -eu
+
+# Rendered JSON array, e.g. ["1fc48db0-..."]. Parsed with jq below.
+ITEM_IDS_JSON='{{ .ssh.keyItemIds | toJson }}'
+
+FORCE=0
+if [ "${1:-}" = "--force" ]; then
+  FORCE=1
+fi
+
+# Idempotence: skip if the agent already holds ≥1 identity.
+if [ "$FORCE" -eq 0 ] && ssh-add -l >/dev/null 2>&1; then
+  echo "[bw-ssh-add] agent already has an identity — nothing to do (use --force to reload)."
+  exit 0
+fi
+
+for cmd in bw jq ssh-add; do
+  command -v "$cmd" >/dev/null 2>&1 || {
+    echo "[bw-ssh-add] '$cmd' not found on PATH" >&2
+    exit 1
+  }
+done
+
+# Obtain a Bitwarden session. Reuse $BW_SESSION if it still unlocks; otherwise
+# inspect status and unlock. `bw status` never prints the session, so an
+# unlocked vault with no env session still requires `bw unlock`.
+if [ -n "${BW_SESSION:-}" ] && bw status --session "$BW_SESSION" >/dev/null 2>&1; then
+  :
+else
+  bw_state=$(bw status 2>/dev/null | jq -r '.status' 2>/dev/null || echo unknown)
+  case "$bw_state" in
+    unauthenticated)
+      echo "[bw-ssh-add] bw is not logged in — run 'bw login' first." >&2
+      exit 1
+      ;;
+    locked | unlocked)
+      echo "[bw-ssh-add] unlocking vault (enter Bitwarden master password)..." >&2
+      BW_SESSION=$(bw unlock --raw) || {
+        echo "[bw-ssh-add] unlock failed." >&2
+        exit 1
+      }
+      export BW_SESSION
+      ;;
+    *)
+      echo "[bw-ssh-add] unexpected bw status: ${bw_state}" >&2
+      exit 1
+      ;;
+  esac
+fi
+
+# Load each configured key. Native SSH-key items expose the OpenSSH private
+# key at .sshKey.privateKey (verified in Task 1). If Task 1 found a different
+# path, update the jq filter here to match.
+for id in $(printf '%s' "$ITEM_IDS_JSON" | jq -r '.[]'); do
+  printf '[bw-ssh-add] loading key %s...\n' "$id"
+  key=$(bw get item "$id" --session "$BW_SESSION" | jq -r '.sshKey.privateKey')
+  if [ -z "$key" ] || [ "$key" = "null" ]; then
+    echo "[bw-ssh-add] WARNING: no privateKey at .sshKey.privateKey for $id — check the field path." >&2
+    continue
+  fi
+  printf '%s\n' "$key" | ssh-add -
+done
+
+echo "[bw-ssh-add] done. Agent identities:"
+ssh-add -l
