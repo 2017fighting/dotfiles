@@ -13,7 +13,7 @@
 (From the spec + repo conventions. Every task's requirements implicitly include these.)
 
 - **No `set -e` in lifecycle scripts** — `.chezmoiscripts/run_*` run on every machine and must tolerate partial failure (missing tools, network errors). Guard each failure-prone step explicitly and always end with `exit 0`.
-- **`chezmoi apply` MUST use `--exclude=externals`** — the existing ecc external sits in detached HEAD at a pinned tag; a periodic refresh would `git pull` on it and abort apply. New plannotator external is the same shape and must be excluded too.
+- **`chezmoi apply` uses `--exclude=externals`** — externals are declarative records only; the `run_onchange` installer scripts self-clone (mirrors the verified ecc pattern, and makes apply robust against external-clone failures since the script `exit 0`s on network error). Both ecc and plannotator externals use `refreshPeriod: 0`, so apply no longer aborts on detached HEAD (commit `c47b462` fixed ecc's refresh — the old `--exclude=externals` workaround is no longer strictly required), but `--exclude=externals` is kept for consistency with the self-clone pattern.
 - **First-clone is the script's job, not external refresh's** — the `run_onchange` script self-clones plannotator if `~/.local/share/plannotator/.git` is missing (mirrors the ecc script), so the script is correct even when apply is run with `--exclude=externals`.
 - **Shell style** — 2-space indent, always quote variables, idempotent (re-runs are no-ops or converge).
 - **Git commits need SSH signing** — before any `git commit`, run `export SSH_AUTH_SOCK="${XDG_RUNTIME_DIR}/ssh-agent.sock"` (key lives in the OS ssh-agent via `bw-ssh-add`). Commit messages include the HAPI co-author trailer.
