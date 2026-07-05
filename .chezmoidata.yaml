@@ -32,3 +32,18 @@ ssh:
     version: "1"
   keyItemIds:
     - "1fc48db0-b2a7-4eb4-9877-33847b9f3075"
+
+# Claude Code third-party plugins — managed by chezmoi.
+# Each plugin has a matching .chezmoiexternals/<name>.yaml.tmpl and a
+# run_onchange_after_7X-<name>-install.sh.tmpl. Bump version/ref to upgrade.
+plugins:
+  plannotator:
+    # Passed to install.sh --version and used to gate binary-layer reinstall.
+    version: "0.21.3"
+    # git tag/commit the external clone checks out (--branch) AND the run_onchange
+    # script force-checks out. Confirmed via `git ls-remote --tags` — upstream uses
+    # vX.Y.Z naming. v0.21.3 -> commit ec8342c.
+    ref: "v0.21.3"
+    # Sets PLANNOTATOR_SKIP_SEM_INSTALL=1 (sem code-review sidecar not currently
+    # installed; toggle to false to install sem alongside the binary).
+    skipSem: true

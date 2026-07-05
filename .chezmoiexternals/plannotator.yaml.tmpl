@@ -1,0 +1,20 @@
+# plannotator repo clone, consumed by
+# .chezmoiscripts/run_onchange_after_71-plannotator-install.sh.tmpl.
+# The installer script force-checks out plugins.plannotator.ref before registering
+# the plugin, so this external is a declarative bootstrap/clone source only
+# (mirrors the ecc / oh-my-zsh / nvim pattern).
+#
+# refreshPeriod is 0 (disabled): plannotator is pinned to a tag
+# ({{ .plugins.plannotator.ref }}), which leaves the working tree in detached HEAD.
+# A periodic refresh would run `git pull` on that detached HEAD and abort with
+# "You are not currently on a branch", breaking `chezmoi apply`. Version upgrades
+# flow through the run_onchange installer script (its content hash changes when
+# plugins.plannotator.version bumps), not through this external.
+.local/share/plannotator:
+  type: git-repo
+  url: https://github.com/backnotprop/plannotator.git
+  clone:
+    args:
+      - --branch
+      - "{{ .plugins.plannotator.ref }}"
+  refreshPeriod: 0
