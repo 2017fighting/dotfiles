@@ -27,7 +27,6 @@ claude = "latest"
 # conda
 # imagemagick = "latest"
 # pipx
-"pipx:bwssh" = "latest"
 "copier" = "latest"
 # github
 # "github:backnotprop/plannotator" = "latest"

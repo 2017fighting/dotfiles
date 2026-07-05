@@ -37,7 +37,7 @@ cd:
 init:
 	chezmoi init
 
-# 校验 SSH/bwssh 链路是否就绪：bwssh 守护进程 + vault 解锁 + GitHub 能用 key 认证 + SSH externals 已 clone。
+# 校验 SSH 链路是否就绪：ssh-agent 运行 + key 已加载（bw-ssh-add）+ GitHub 能用 key 认证 + SSH externals 已 clone。
 # 退出码非 0 表示有检查未通过（可用于 apply 后自检 / CI gate）。
 [group('verify')]
 doctor:
@@ -48,20 +48,21 @@ doctor:
 	fail() { printf '  \033[31m✗\033[0m %s\n' "$1"; ok=1; }
 	hdr() { printf '\n== %s ==\n' "$1"; }
 
-	hdr "bwssh"
-	if command -v bwssh >/dev/null 2>&1; then
-	  pass "bwssh on PATH"
-	  # bwssh status 是 ~2.6s 的 python 冷启动，只调用一次
-	  out="$(bwssh status 2>&1)"; rc=$?
-	  if [ "$rc" -eq 0 ]; then pass "daemon running"; else fail "daemon down (run: bwssh start)"; fi
-	  state="$(printf '%s\n' "$out" | awk '/^State:/ {print $2; exit}')"
-	  case "${state:-unknown}" in
-	    unlocked) pass "vault unlocked" ;;
-	    locked) fail "vault locked (run: bwssh unlock)" ;;
-	    *) fail "unknown bwssh state '${state:-<empty>}'" ;;
-	  esac
+	hdr "ssh-agent"
+	if command -v ssh-add >/dev/null 2>&1; then
+	  pass "ssh-add on PATH"
+	  if [ -n "${SSH_AUTH_SOCK:-}" ]; then
+	    pass "SSH_AUTH_SOCK set ($SSH_AUTH_SOCK)"
+	  else
+	    fail "SSH_AUTH_SOCK unset (run from a login shell, or check ~/.zprofile)"
+	  fi
+	  if ssh-add -l >/dev/null 2>&1; then
+	    pass "agent has an identity (re-run 'bw-ssh-add' to refresh)"
+	  else
+	    fail "agent empty (run: bw-ssh-add)"
+	  fi
 	else
-	  fail "bwssh NOT on PATH (run: mise install)"
+	  fail "ssh-add NOT on PATH"
 	fi
 
 	hdr "github ssh key"

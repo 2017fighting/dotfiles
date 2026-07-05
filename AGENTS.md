@@ -324,7 +324,7 @@ prettier --write path/to/file
 - Encrypted files use **age** encryption
 - Private key location: `~/.config/chezmoi/key.txt`
 - Public key (recipient): `age16nnlyeqwxfc0v8wn9y9px8kv6gev9jr4487d6su20l55ehjdpsgqp8chnk`
-- SSH keys managed via Bitwarden SSH agent
+- SSH keys loaded into the OS-native ssh-agent via `bw-ssh-add` (Bitwarden CLI unlock + ssh-add); agent runs as a systemd user unit on Linux, launchd-built-in on macOS
 - Never commit unencrypted secrets to git
 
 ### Git Workflow

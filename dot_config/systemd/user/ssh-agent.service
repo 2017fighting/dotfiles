@@ -1,0 +1,11 @@
+[Unit]
+Description=OpenSSH key agent
+Documentation=https://man.archlinux.org/man/ssh-agent.1
+
+[Service]
+Type=simple
+Environment=SSH_AUTH_SOCK=%t/ssh-agent.sock
+ExecStart=/usr/bin/ssh-agent -D -a ${SSH_AUTH_SOCK}
+
+[Install]
+WantedBy=default.target

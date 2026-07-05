@@ -2,30 +2,31 @@
 # Phase: before_  (after run_once_before_10). Ensure SSH readiness before the
 # normal-phase external clones (nvim, oh-my-zsh + plugins, oh-my-tmux, ecc).
 #
-# Trigger: run_onchange_ -- runs ONCE, then only when THIS script's content
-# changes. It does NOT re-run when the bwssh daemon dies or the vault re-locks
-# (ephemeral states no file hash captures). If a later `chezmoi apply` fails on
-# an external SSH clone, run `bwssh start && bwssh unlock`, then re-apply.
+# Trigger: run_onchange_ — runs ONCE, then only when THIS script's content
+# changes. It does NOT re-run if the vault re-locks later (ephemeral state no
+# file hash captures). If a later `chezmoi apply` fails on an external SSH
+# clone, run `bw-ssh-add` (after `bw login` if needed), then re-apply.
 #
-# Key delivery is file-based: chezmoi's external-clone git inherits chezmoi's
-# process env, which this child script CANNOT mutate. So we depend on
-# IdentityAgent in ~/.ssh/config (added to the ssh config source), read directly by
-# ssh. We still materialize ~/.ssh/config + known_hosts here because the early
-# externals (.config/*, .oh-my-zsh, .local/*) sort BEFORE .ssh and would otherwise
-# hit a missing-config / unknown-host failure.
+# Key delivery: system ssh-agent + SSH_AUTH_SOCK. The externals' git clones
+# inherit chezmoi's process env, which this child script CANNOT mutate, so we
+# rely on SSH_AUTH_SOCK being exported already (set in ~/.zprofile on Linux,
+# or provided by macOS). We materialize ~/.ssh/config + known_hosts here
+# because the early externals (.config/*, .oh-my-zsh, .local/*) sort BEFORE
+# .ssh and would otherwise hit a missing-config / unknown-host failure. We
+# also materialize ~/.local/bin/bw-ssh-add (a normal-phase file) so we can
+# invoke it here.
 set -eu
 
 _ms="${MISE_DATA_DIR:-$HOME/.local/share/mise}/shims"
 [ -d "$_ms" ] && case ":$PATH:" in *":$_ms:"*) ;; *) PATH="$_ms:$PATH"; export PATH ;; esac
 unset _ms
 
-command -v bwssh   >/dev/null 2>&1 || { echo "[ssh-ensure] bwssh not on PATH - skipping" >&2; exit 0; }
 command -v chezmoi >/dev/null 2>&1 || exit 0
 
-# Materialize a chezmoi-managed file early (atomic temp+mv; avoids partial writes
-# and shellcheck SC2094). $1 = target path whose source exists; $2 = optional chmod.
-# NOTE: `return 0` is load-bearing under `set -e` - without it, a 1-arg call
-# (no chmod) leaves `[ -n "${2:-}" ] && chmod` as the last statement, which
+# Materialize a chezmoi-managed file early (atomic temp+mv; avoids partial
+# writes and shellcheck SC2094). $1 = target path whose source exists; $2 =
+# optional chmod. NOTE: `return 0` is load-bearing under `set -e` - without it,
+# a 1-arg call leaves `[ -n "${2:-}" ] && chmod` as the last statement, which
 # returns 1 when $2 is empty, killing the whole script at the call site.
 materialize() {
   _dst="$1"; _tmp="$_dst.tmp"
@@ -37,54 +38,38 @@ materialize() {
   return 0
 }
 
-# 1. bwssh config (normal-phase file, not on disk yet).
-mkdir -p "$HOME/.config/bwssh"
-materialize "$HOME/.config/bwssh/config.toml"
-
-# 2. ~/.ssh/config (carries IdentityAgent) + known_hosts EARLY.
+# 1. ~/.ssh/config + known_hosts EARLY (host aliases + known hosts; ssh falls
+#    back to SSH_AUTH_SOCK — no IdentityAgent line anymore).
 mkdir -p "$HOME/.ssh"; chmod 700 "$HOME/.ssh"
 materialize "$HOME/.ssh/config" 600
 materialize "$HOME/.ssh/known_hosts" 600
 
-# 3. Start bwssh daemon if down (portable; no plist/systemd dependency).
-# Readiness poll is capped at a FEW tries, not 50: each `bwssh status` is a
-# ~2.6s Python cold-start, so 50 iterations burned ~130s on every apply. And
-# with socket-activated bwssh (Arch), status stays non-zero until a client
-# connects - a long poll buys nothing there. `bwssh start` already waits for
-# systemd to ack, so a handful of polls is enough async-startup slack.
-if ! bwssh status >/dev/null 2>&1; then
-  echo "[ssh-ensure] bwssh daemon down - starting" >&2
-  bwssh start >/dev/null 2>&1 || true
+# 2. Start the system ssh-agent if down (Linux). macOS provides its own.
+{{ if eq .chezmoi.os "linux" }}
+if command -v systemctl >/dev/null 2>&1; then
+  if ! systemctl --user is-active ssh-agent.service >/dev/null 2>&1; then
+    systemctl --user start ssh-agent.service 2>/dev/null || true
+  fi
 fi
-i=0
-while ! bwssh status >/dev/null 2>&1 && [ "$i" -lt 5 ]; do i=$((i + 1)); sleep 0.1; done
+# Fall back to the runtime socket if the unit/env isn't wired yet.
+[ -n "${SSH_AUTH_SOCK:-}" ] || export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.sock"
+{{ end }}
 
-# 4. Ensure `bw` is logged in (fresh machine), then unlock the vault.
+# 3. Materialize bw-ssh-add (normal-phase file) and load the key.
 if command -v bw >/dev/null 2>&1; then
-  bw_status="$(bw status 2>/dev/null | sed -n 's/.*"status":"\([^"]*\)".*/\1/p' | head -n1 || true)"
-  case "${bw_status:-unknown}" in
-    unauthenticated)
-      if [ -t 0 ]; then
-        echo "[ssh-ensure] bw not logged in - running 'bw login'" >&2
-        bw login || echo "[ssh-ensure] bw login failed - external SSH clones may fail" >&2
-      else
-        echo "[ssh-ensure] bw not logged in and no TTY - run 'bw login' first" >&2
-      fi
-      ;;
-  esac
-fi
-
-# 5. Unlock the vault if locked. Exact-match 'locked' ('unlocked' contains 'locked').
-state=$(bwssh status 2>/dev/null | awk '/^State:/ {print $2; exit}')
-case "${state:-unknown}" in
-  locked)
+  mkdir -p "$HOME/.local/bin"
+  materialize "$HOME/.local/bin/bw-ssh-add" 755
+  if [ -x "$HOME/.local/bin/bw-ssh-add" ]; then
     if [ -t 0 ]; then
-      echo "[ssh-ensure] vault locked - unlocking (enter Bitwarden master password)" >&2
-      bwssh unlock || echo "[ssh-ensure] unlock failed - external SSH clones may fail" >&2
+      "$HOME/.local/bin/bw-ssh-add" \
+        || echo "[ssh-ensure] bw-ssh-add failed - external SSH clones may fail" >&2
     else
-      echo "[ssh-ensure] vault locked, no TTY - run 'bwssh unlock'" >&2
+      # Non-interactive: can't prompt for the master password. Surface the
+      # next step instead of failing the apply (lifecycle scripts tolerate
+      # partial failure).
+      echo "[ssh-ensure] no TTY - run 'bw-ssh-add' before re-applying for the external SSH clones" >&2
     fi
-    ;;
-  unlocked) ;;
-  *) echo "[ssh-ensure] unknown bwssh state '${state:-<empty>}' - leaving as-is" >&2 ;;
-esac
+  fi
+else
+  echo "[ssh-ensure] bw CLI not on PATH - skipping key load" >&2
+fi

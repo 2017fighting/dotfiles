@@ -30,7 +30,7 @@ mkdir -p "$HOME/Library/Logs/hapi-runner"
 # actually deregister it before re-loading. `bootout` returns before teardown
 # completes, so bootstrapping immediately can race the deregistration and fail
 # with "Bootstrap failed: 5: Input/output error". Polling until `print` reports
-# the service gone closes that window (same guard as the bwssh-agent loader).
+# the service gone closes that window (same guard as the ssh-agent loader).
 if launchctl print "$DOMAIN/$LABEL" >/dev/null 2>&1; then
   launchctl bootout "$DOMAIN/$LABEL" 2>/dev/null || true
   i=0

@@ -1,19 +1,11 @@
-# make bitwarden as ssh-agent
-# export SSH_AUTH_SOCK=~/.bitwarden-ssh-agent.sock
-{{ if .is_darwin }}
-export SSH_AUTH_SOCK=~/Library/Caches/bwssh/agent.sock
-{{ else }}
-export SSH_AUTH_SOCK=${XDG_RUNTIME_DIR}/bwssh/agent.sock
-{{ end }}
-
-# # start ssh-agent and add private key
-# export SSH_AUTH_SOCK=~/.ssh/ssh-agent.sock
-# if ! pgrep -u "$USER" ssh-agent > /dev/null; then
-#     eval "$(ssh-agent -a ~/.ssh/ssh-agent.sock | grep -v 'Agent pid')"
-#     ssh-add -q ~/.ssh/id_ed25519
-# fi
-# export SSH_AGENT_PID=$(pidof ssh-agent)
-# 
+# SSH_AUTH_SOCK is exported in ~/.zprofile (Linux) so non-interactive children
+# inherit it; macOS provides its own. Here we only emit a one-line hint when
+# the agent has no identities, so a fresh shell reminds you to load keys.
+if [[ -o interactive ]]; then
+  if ! ssh-add -l >/dev/null 2>&1; then
+    echo "[ssh] agent empty — run 'bw-ssh-add' to load keys"
+  fi
+fi
 
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH

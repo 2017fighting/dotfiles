@@ -1,0 +1,31 @@
+#!/bin/sh
+# Enable the system ssh-agent user service (Linux) so SSH keys loaded by
+# `bw-ssh-add` survive across shells until reboot. macOS needs no setup — its
+# launchd already provides SSH_AUTH_SOCK — so this script is a no-op there.
+#
+# Idempotent. Re-runs whenever ssh.agent.version changes — bump it in
+# .chezmoidata.yaml to force a re-enable (e.g. after editing the unit file).
+# config-version={{ .ssh.agent.version }}
+set -eu
+
+{{ if eq .chezmoi.os "linux" }}
+UNIT="ssh-agent.service"
+UNIT_PATH="$HOME/.config/systemd/user/$UNIT"
+
+if [ ! -f "$UNIT_PATH" ]; then
+  echo "[ssh-agent] unit not found at $UNIT_PATH — re-run 'chezmoi apply'." >&2
+  exit 0
+fi
+
+systemctl --user daemon-reload
+systemctl --user enable --now "$UNIT"
+
+# Boot-start: ensure the user manager runs before login so the agent is up
+# whenever `bw-ssh-add` runs. Matches the hapi-runner linger behaviour.
+loginctl enable-linger "$USER" 2>/dev/null \
+  || sudo loginctl enable-linger "$USER" 2>/dev/null || true
+
+echo "[ssh-agent] systemd user unit enabled: $UNIT (linger on)"
+{{ else }}
+echo "[ssh-agent] {{ .chezmoi.os }} uses the OS-provided ssh-agent — nothing to do."
+{{ end }}

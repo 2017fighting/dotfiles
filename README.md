@@ -13,11 +13,11 @@
 
 ## 恢复流程
 
-新机器的完整引导步骤（含 mise/bwssh 自动化与坑）见 **[BOOTSTRAP.md](./BOOTSTRAP.md)**。
+新机器的完整引导步骤（含 mise/bw-ssh-add 自动化与坑）见 **[BOOTSTRAP.md](./BOOTSTRAP.md)**。
 
-简要来说只需 4 步：放好 `~/.config/chezmoi/key.txt` → 安装 chezmoi →（mac）安装 Homebrew → `chezmoi init --apply 2017fighting`。`run_once_before_10` / `run_onchange_before_20` 会自动完成 mise / bitwarden-cli / bwssh 的安装、bwssh 启动与登录解锁、以及 SSH externals（oh-my-zsh、nvim、oh-my-tmux）的 clone。
+简要来说只需 4 步：放好 `~/.config/chezmoi/key.txt` → 安装 chezmoi →（mac）安装 Homebrew → `chezmoi init --apply 2017fighting`。`run_once_before_10` / `run_onchange_before_20` 会自动完成 mise / bitwarden-cli 的安装、提示 `bw login` 与 `bw-ssh-add` 加载 key、以及 SSH externals（oh-my-zsh、nvim、oh-my-tmux）的 clone。
 
-apply 完成后可用 `just doctor` 自检 SSH/bwssh 链路是否就绪。
+apply 完成后可用 `just doctor` 自检 SSH 链路是否就绪（ssh-agent + key + GitHub 认证）。
 
 ## 特殊文件/文件夹
 >

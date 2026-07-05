@@ -23,9 +23,12 @@ hapi:
       - .local/share
     version: "3"
 
-# bwssh-agent LaunchAgent (macOS only) — loaded by
-# .chezmoiscripts/run_onchange_after_81-bwssh-agent.sh.tmpl. Bump `version` to
-# force a reload after editing the plist.
-bwssh:
+# System ssh-agent + bw-ssh-add key loader. The agent unit is enabled by
+# .chezmoiscripts/run_onchange_after_81-ssh-agent.sh.tmpl; bump `version` to
+# force a re-enable after editing the unit file. `keyItemIds` lists Bitwarden
+# SSH-key item ids that `bw-ssh-add` loads into the agent.
+ssh:
   agent:
     version: "1"
+  keyItemIds:
+    - "1fc48db0-b2a7-4eb4-9877-33847b9f3075"

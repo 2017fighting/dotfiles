@@ -33,7 +33,8 @@ TOML, YAML, and Lua. There is **no build step and no test suite.**
   `if [ -f "$FILE" ]; then ...`.
 - **Never commit unencrypted secrets.** Secrets use **age** encryption
   (`encrypted_*.age`); key lives at `~/.config/chezmoi/key.txt`. SSH keys are
-  served by the Bitwarden SSH agent.
+  loaded into the OS-native ssh-agent by `bw-ssh-add` (unlocks Bitwarden via
+  the `bw` CLI, then `ssh-add`).
 - **This source dir deploys to `$HOME`.** Files here are not deployed unless they
   carry a chezmoi prefix — so a plain `CLAUDE.md`/`README.md` at root stays
   repo-only.

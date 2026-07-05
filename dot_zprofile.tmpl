@@ -9,6 +9,13 @@ fi
 
 export MANPAGER="nvim +Man! -c 'nnoremap i <nop>'"
 
+{{ if not .is_darwin }}
+# Use the systemd-managed ssh-agent (~/.config/systemd/user/ssh-agent.service)
+# as the single SSH agent. Set in zprofile (not zshrc) so non-interactive
+# children — chezmoi apply, git, the before_20 lifecycle script — inherit it.
+export SSH_AUTH_SOCK="${XDG_RUNTIME_DIR}/ssh-agent.sock"
+{{ end }}
+
 {{ if .is_darwin }}
 # Added by OrbStack: command-line tools and integration
 # This won't be added again if you remove it.
