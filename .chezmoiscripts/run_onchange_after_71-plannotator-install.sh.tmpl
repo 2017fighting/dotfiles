@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+# Manage plannotator (https://github.com/backnotprop/plannotator) via chezmoi.
+# Registers plannotator as a Claude Code plugin via a directory-source marketplace
+# (pinned to {{ .plugins.plannotator.ref }}) AND installs the binary layer via
+# upstream install.sh. Re-runs whenever plugins.plannotator.version changes
+# (version is embedded in the comment on the next line, so bumping it in
+# .chezmoidata.yaml changes this script's content hash and retriggers run_onchange).
+# Idempotent.
+# version={{ .plugins.plannotator.version }}
+#
+# No `set -e`: this is a chezmoi lifecycle script and must tolerate partial failure
+# (missing mise tools, network errors) without blocking `chezmoi apply`.
+
+PLN_SRC="$HOME/.local/share/plannotator"
+PLN_VERSION="{{ .plugins.plannotator.version }}"
+PLN_REF="{{ .plugins.plannotator.ref }}"
+PLN_SKIP_SEM="{{ .plugins.plannotator.skipSem }}"
+INSTALL_DIR="$HOME/.local/bin"
+
+# Tooling is mise-managed on this machine. Skip gracefully if absent — the plugin
+# registration and binary install both need node/bun/claude.
+for tool in node bun claude; do
+  command -v "$tool" >/dev/null 2>&1 || {
+    echo "[plannotator] $tool not found on PATH — skipping install." >&2
+    exit 0
+  }
+done
+
+# Ensure the repo is present at the pinned ref. .chezmoiexternals/plannotator.yaml.tmpl
+# usually clones it first, but this self-clone makes the script correct regardless of
+# apply ordering (and when apply runs with --exclude=externals).
+if [ ! -d "$PLN_SRC/.git" ]; then
+  if ! git clone --quiet --branch "$PLN_REF" https://github.com/backnotprop/plannotator.git "$PLN_SRC"; then
+    echo "[plannotator] clone failed — skipping." >&2
+    exit 0
+  fi
+fi
+
+cd "$PLN_SRC" || exit 0
+git fetch --tags --quiet
+git checkout --quiet --force "$PLN_REF" || \
+  echo "[plannotator] checkout $PLN_REF failed, continuing on current HEAD" >&2
+
+# Register as a directory-source plugin so the pin sticks (a github-source marketplace
+# would track upstream HEAD). remove-then-add handles the github->directory source-type
+# change idempotently (R1 in the design doc).
+claude plugin marketplace remove plannotator >/dev/null 2>&1 || true
+claude plugin marketplace add "$PLN_SRC" --scope user || \
+  echo "[plannotator] marketplace add failed" >&2
+claude plugin install plannotator@plannotator --scope user || \
+  echo "[plannotator] plugin install failed" >&2
+
+# Binary layer: install.sh always re-downloads (it rm's the binary first), so gate
+# the call on the installed version to keep re-runs cheap and offline-safe.
+NEEDS_BINARY=1
+if [ -x "$INSTALL_DIR/plannotator" ]; then
+  CURRENT="$("$INSTALL_DIR/plannotator" --version 2>/dev/null | awk '{print $2}')"
+  if [ "$CURRENT" = "$PLN_VERSION" ]; then
+    NEEDS_BINARY=0
+  fi
+fi
+
+if [ "$NEEDS_BINARY" = "1" ]; then
+  echo "[plannotator] installing binary layer v$PLN_VERSION via upstream install.sh"
+  if [ "$PLN_SKIP_SEM" = "true" ]; then
+    export PLANNOTATOR_SKIP_SEM_INSTALL=1
+  fi
+  if ! timeout 300 bash "$PLN_SRC/scripts/install.sh" \
+      --version "$PLN_VERSION" \
+      --non-interactive \
+      --no-extras \
+      --model-invocable none \
+      --skip-attestation; then
+    echo "[plannotator] install.sh failed (timeout or error) — binary layer not installed, continuing." >&2
+  fi
+else
+  echo "[plannotator] binary layer already at v$PLN_VERSION, skipping install.sh"
+fi
+
+echo "[plannotator] done (ref=$PLN_REF, version=$PLN_VERSION)"
+exit 0
