@@ -10,6 +10,13 @@
 #
 # No `set -e`: this is a chezmoi lifecycle script and must tolerate partial failure
 # (missing mise tools, network errors) without blocking `chezmoi apply`.
+#
+# First-clone recovery: this script `exit 0`s on clone failure (lifecycle rule), so
+# chezmoi records its hash and won't auto-retry. If the very first clone fails (e.g.,
+# SSH_AUTH_SOCK unset in a non-login shell — the host git config rewrites
+# https://github.com to ssh://), clear this script's entryState, then re-apply:
+#   chezmoi state delete --bucket=entryState --key="$HOME/.chezmoiscripts/71-plannotator-install.sh"
+#   chezmoi apply --exclude=externals
 
 PLN_SRC="$HOME/.local/share/plannotator"
 PLN_VERSION="{{ .plugins.plannotator.version }}"
