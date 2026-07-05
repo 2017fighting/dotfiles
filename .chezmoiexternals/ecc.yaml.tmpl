@@ -1,6 +1,12 @@
 # ecc repo clone, consumed by .chezmoiscripts/run_onchange_after_70-ecc-install.sh.tmpl.
 # The installer script force-checks out ecc.version before installing, so this external
-# is a declarative bootstrap/fetch source (mirrors the oh-my-zsh / nvim pattern).
+# is a declarative bootstrap/clone source only (mirrors the oh-my-zsh / nvim pattern).
+#
+# refreshPeriod is 0 (disabled): ecc is pinned to a tag ({{ .ecc.version }}), which
+# leaves the working tree in detached HEAD. A periodic refresh would run `git pull`
+# on that detached HEAD and abort with "You are not currently on a branch", breaking
+# `chezmoi apply`. Version upgrades flow through the run_onchange installer script
+# (its content hash changes when ecc.version bumps), not through this external.
 .local/share/ecc:
   type: git-repo
   url: https://github.com/affaan-m/ecc.git
@@ -8,4 +14,4 @@
     args:
       - --branch
       - "{{ .ecc.version }}"
-  refreshPeriod: 168h
+  refreshPeriod: 0
