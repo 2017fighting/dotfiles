@@ -618,4 +618,5 @@ sample
 justfile
 pyproject.toml
 uv.lock
+settings
 
