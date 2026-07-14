@@ -16,6 +16,7 @@ lua = "5.1"         # for AstroVvim
 ruby = "latest"
 ruff = "latest"
 yamllint = "latest"
+yamlfmt = "latest"
 # php = "latest"
 java = "latest"
 julia = "latest"
