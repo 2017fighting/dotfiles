@@ -603,6 +603,7 @@ $RECYCLE.BIN/
 
 **/.claude/settings.local.json
 **/.claude/worktrees
+.mcp.json
 
 # Start codegraph
 .codegraph
