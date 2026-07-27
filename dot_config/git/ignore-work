@@ -623,3 +623,4 @@ uv.lock
 settings
 projects/FS/hold_seat/api_records/
 browser-profile/
+*.har
