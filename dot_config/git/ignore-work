@@ -623,5 +623,9 @@ uv.lock
 settings
 projects/FS/hold_seat/api_records/
 browser-profile/
+
+# 抓包
 *.har
 *.chls
+flows
+
