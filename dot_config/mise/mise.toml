@@ -33,6 +33,7 @@ claude = "latest"
 # "github:backnotprop/plannotator" = "latest"
 "github:saladday/cc-switch-cli" = "latest"
 "github:pranshuparmar/witr" = "latest"
+"github:can1357/oh-my-pi" = "latest"
 # uv
 # "uv:serena" = "latest"
 # npm
