@@ -4,6 +4,7 @@
 
 dry_run := env("DRY_RUN", "true")
 rclone_opts := "-v -P" + (if dry_run == "true" { " --dry-run" } else { "" })
+rsync_opts := "-az -i --stats" + (if dry_run == "true" { " -n" } else { "" })
 
 # Sync a subdirectory under {{ project_path }}/ to a remote rclone target.
 # Usage: just _sync <dir> <host:path>
@@ -26,4 +27,25 @@ _sync dir target:
         printf '  %s\n' "$synced"
     else
         echo "==> Nothing to sync."
+    fi
+
+# Sync the whole {{ project_path }} tree to a remote host over ssh. Unlike the
+# rclone recipe above, this goes through the system ssh and therefore reuses
+# the ControlMaster socket from ~/.ssh/config (no fresh handshake per run).
+# No --delete: files removed locally stay on the remote (same semantics as
+# rclone copy above).
+# Usage: just _sync_all <host:path>
+_sync_all target:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    src="{{ project_path }}"
+    dest="{{ target }}/$src"
+    parent=$(dirname "$dest")
+    echo "==> Syncing $src -> $dest"
+    rsync {{ rsync_opts }} \
+        --exclude '__pycache__/' --exclude '*.pyc' --exclude '.ruff_cache/' \
+        "$src" "$parent/"
+    if [ "{{ dry_run }}" = "true" ]; then
+        echo ""
+        echo "==> DRY_RUN=true, nothing was pushed. Re-run with DRY_RUN=false."
     fi
