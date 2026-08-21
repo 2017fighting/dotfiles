@@ -30,6 +30,19 @@ automatically; git-repos need `.git`, `type: file` entries need the file),
 and environment intake (every env.d source entry present on target + a
 `zsh -lc` sentinel proving the glob loop runs in the login-shell shape).
 
+## pinned-tool installer
+
+A third-party tool pinned to an exact ref in `.chezmoidata.yaml` (`clonePath`,
+`version`, `ref`), cloned and registered by its `run_onchange_after_7X`
+installer script — **the script owns the clone**; there is no `.chezmoiexternals`
+entry (externals are for HEAD-tracking clones; a tag-pinned external's refresh
+aborts apply on detached HEAD). Upgrades bump the version. Self-healing: a
+missing clone re-triggers the installer on the next apply (failing scripts
+are never hash-recorded, and a `clone-present` target-stat hash line catches
+post-install deletion). Error philosophy: loud clone, tolerant tail
+(registration steps warn and continue). See
+`docs/superpowers/specs/2026-08-21-pinned-tool-installer-design.md`.
+
 ## workspaceRoots (exemplar of a deep module)
 
 `hapi.runner.workspaceRoots` in `.chezmoidata.yaml` is one data entry expanded by

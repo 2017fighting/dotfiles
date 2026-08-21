@@ -1,24 +1,31 @@
 #!/usr/bin/env bash
-# Manage plannotator (https://github.com/backnotprop/plannotator) via chezmoi.
+# Manage plannotator (https://github.com/backnotprop/plannotator) via chezmoi —
+# pinned-tool installer. This script OWNS the clone at plugins.plannotator.clonePath
+# (.chezmoidata.yaml); there is no .chezmoiexternals entry for it. Externals are for
+# HEAD-tracking clones; a tag-pinned external with periodic refresh aborts apply on
+# detached HEAD. See docs/superpowers/specs/2026-08-21-pinned-tool-installer-design.md
+#
 # Registers plannotator as a Claude Code plugin via a directory-source marketplace
-# (pinned to {{ .plugins.plannotator.ref }}) AND installs the binary layer via
-# upstream install.sh. Re-runs whenever plugins.plannotator.version changes
-# (version is embedded in the comment on the next line, so bumping it in
-# .chezmoidata.yaml changes this script's content hash and retriggers run_onchange).
-# Idempotent.
+# (pinned to the ref below) AND installs the binary layer via upstream install.sh.
+#
+# Error philosophy (aligned with 70-ecc):
+#   LOUD clone    — clone/fetch/checkout failures exit 1, so chezmoi does NOT
+#                   record the script's hash and retries on the next apply. (This
+#                   replaces the old exit-0 + `chezmoi state delete` recovery dance:
+#                   a failing script is never hash-recorded, so retry is automatic.)
+#   TOLERANT tail — registration/binary-install steps warn and continue.
+# Re-runs whenever plugins.plannotator.version changes (version is embedded in the
+# comment below, so bumping it in .chezmoidata.yaml changes this script's content
+# hash and retriggers run_onchange). Idempotent.
 # version={{ .plugins.plannotator.version }}
+{{- $plnClone := joinPath (joinPath .chezmoi.homeDir .plugins.plannotator.clonePath) ".git" }}
+# clone-present={{ if stat $plnClone }}yes{{ else }}no{{ end }}
 #
 # No `set -e`: this is a chezmoi lifecycle script and must tolerate partial failure
-# (missing mise tools, network errors) without blocking `chezmoi apply`.
-#
-# First-clone recovery: this script `exit 0`s on clone failure (lifecycle rule), so
-# chezmoi records its hash and won't auto-retry. If the very first clone fails (e.g.,
-# SSH_AUTH_SOCK unset in a non-login shell — the host git config rewrites
-# https://github.com to ssh://), clear this script's entryState, then re-apply:
-#   chezmoi state delete --bucket=entryState --key="$HOME/.chezmoiscripts/71-plannotator-install.sh"
-#   chezmoi apply --exclude=externals
+# (missing mise tools, network errors) without blocking `chezmoi apply` — except the
+# LOUD clone section above, which deliberately exits 1 for retry.
 
-PLN_SRC="$HOME/.local/share/plannotator"
+PLN_SRC="$HOME/{{ .plugins.plannotator.clonePath }}"
 PLN_VERSION="{{ .plugins.plannotator.version }}"
 PLN_REF="{{ .plugins.plannotator.ref }}"
 PLN_SKIP_SEM="{{ .plugins.plannotator.skipSem }}"
@@ -33,29 +40,30 @@ for tool in node bun claude; do
   }
 done
 
-# Ensure the repo is present at the pinned ref. .chezmoiexternals/plannotator.yaml.tmpl
-# usually clones it first, but this self-clone makes the script correct regardless of
-# apply ordering (and when apply runs with --exclude=externals).
+# --- LOUD: own the clone at the pinned ref ------------------------------------------
 if [ ! -d "$PLN_SRC/.git" ]; then
   if ! git clone --quiet --branch "$PLN_REF" https://github.com/backnotprop/plannotator.git "$PLN_SRC"; then
-    echo "[plannotator] clone failed — skipping." >&2
-    exit 0
+    echo "[plannotator] clone failed — exiting 1 so chezmoi retries on the next apply." >&2
+    exit 1
   fi
 fi
 
-cd "$PLN_SRC" || exit 0
-git fetch --tags --quiet
-git checkout --quiet --force "$PLN_REF" || \
-  echo "[plannotator] checkout $PLN_REF failed, continuing on current HEAD" >&2
+cd "$PLN_SRC" || exit 1
+if ! git fetch --tags --quiet || ! git checkout --quiet --force "$PLN_REF"; then
+  echo "[plannotator] pin to $PLN_REF failed — exiting 1 so chezmoi retries on the next apply." >&2
+  exit 1
+fi
+
+# --- TOLERANT: everything downstream warns and continues -----------------------------
 
 # Register as a directory-source plugin so the pin sticks (a github-source marketplace
 # would track upstream HEAD). remove-then-add handles the github->directory source-type
-# change idempotently (R1 in the design doc).
+# change idempotently.
 claude plugin marketplace remove plannotator >/dev/null 2>&1 || true
-claude plugin marketplace add "$PLN_SRC" --scope user || \
-  echo "[plannotator] marketplace add failed" >&2
-claude plugin install plannotator@plannotator --scope user || \
-  echo "[plannotator] plugin install failed" >&2
+claude plugin marketplace add "$PLN_SRC" --scope user ||
+  echo "[plannotator] marketplace add failed — continuing" >&2
+claude plugin install plannotator@plannotator --scope user ||
+  echo "[plannotator] plugin install failed — continuing" >&2
 
 # Binary layer: install.sh always re-downloads (it rm's the binary first), so gate
 # the call on the installed version to keep re-runs cheap and offline-safe.

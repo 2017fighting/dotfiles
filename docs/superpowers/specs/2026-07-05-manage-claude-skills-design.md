@@ -1,7 +1,7 @@
 # Design: Manage Claude skills with chezmoi
 
 - **Date:** 2026-07-05
-- **Status:** Approved
+- **Status:** Approved — externals pairing superseded by `2026-08-21-pinned-tool-installer-design.md` (installer owns the clone)
 - **Upstream:** https://github.com/backnotprop/plannotator (currently installed `0.21.3`, commit `1eee3eb`)
 - **Scope:** chezmoi source repo at `~/.local/share/chezmoi`
 

@@ -1,56 +1,69 @@
 #!/usr/bin/env bash
-# Manage ecc (https://github.com/affaan-m/ecc) via chezmoi.
-# Registers ecc as a local Claude Code plugin (~/.local/share/ecc) so its full
-# skill/agent/command/hook set loads through the plugin system (install-apply's flat
-# copies don't — see ~/.claude/plans). Re-runs whenever ecc.version changes (version is
-# embedded below). Idempotent.
+# Manage ecc (https://github.com/affaan-m/ecc) via chezmoi — pinned-tool installer.
+# This script OWNS the clone at ecc.clonePath (.chezmoidata.yaml); there is no
+# .chezmoiexternals entry for it. Externals are for HEAD-tracking clones (oh-my-zsh,
+# nvim); a tag-pinned external with periodic refresh aborts apply on detached HEAD.
+# See docs/superpowers/specs/2026-08-21-pinned-tool-installer-design.md
+#
+# Error philosophy (aligned with 71-plannotator):
+#   LOUD clone    — clone/fetch/checkout failures exit 1, so chezmoi does NOT
+#                   record the script's hash and retries on the next apply.
+#   TOLERANT tail — registration steps (npm/marketplace/symlink) warn and
+#                   continue; flakiness there must not block later scripts.
+# Re-runs whenever ecc.version changes (version is embedded below). Idempotent.
 # version={{ .ecc.version }}
-set -euo pipefail
+{{- $eccClone := joinPath (joinPath .chezmoi.homeDir .ecc.clonePath) ".git" }}
+# clone-present={{ if stat $eccClone }}yes{{ else }}no{{ end }}
+set -uo pipefail
 
-ECC_SRC="$HOME/.local/share/ecc"
+ECC_SRC="$HOME/{{ .ecc.clonePath }}"
 ECC_VERSION="{{ .ecc.version }}"
 
 # ecc's tooling and the claude CLI are mise-managed on this machine. Skip gracefully if absent.
-if ! command -v node >/dev/null 2>&1; then
-  echo "[ecc] node not found on PATH — skipping install." >&2
-  exit 0
-fi
-if ! command -v claude >/dev/null 2>&1; then
-  echo "[ecc] claude CLI not found on PATH — skipping plugin registration." >&2
-  exit 0
-fi
+for tool in node claude; do
+  command -v "$tool" >/dev/null 2>&1 || {
+    echo "[ecc] $tool not found on PATH — skipping install." >&2
+    exit 0
+  }
+done
 
-# Ensure the repo is present. .chezmoiexternals/ecc.yaml.tmpl usually clones it first,
-# but this self-clone makes the script correct regardless of apply ordering.
+# --- LOUD: own the clone at the pinned tag ------------------------------------------
 if [ ! -d "$ECC_SRC/.git" ]; then
-  git clone --quiet --branch "$ECC_VERSION" https://github.com/affaan-m/ecc.git "$ECC_SRC"
+  if ! git clone --quiet --branch "$ECC_VERSION" https://github.com/affaan-m/ecc.git "$ECC_SRC"; then
+    echo "[ecc] clone failed — exiting 1 so chezmoi retries on the next apply." >&2
+    exit 1
+  fi
 fi
 
-cd "$ECC_SRC"
+cd "$ECC_SRC" || exit 1
+if ! git fetch --tags --quiet || ! git checkout --quiet --force "$ECC_VERSION"; then
+  echo "[ecc] pin to $ECC_VERSION failed — exiting 1 so chezmoi retries on the next apply." >&2
+  exit 1
+fi
 
-# Pin the exact version. Authoritative — overrides any drift from the external refresh.
-git fetch --tags --quiet
-git checkout --quiet --force "$ECC_VERSION"
+# --- TOLERANT: everything downstream warns and continues -----------------------------
 
-# Hooks may run scripts that need node deps; keep them installed (idempotent, cheap insurance).
-npm install --no-audit --no-fund --loglevel=error
+# Hooks may run scripts that need node deps (idempotent, cheap insurance).
+npm install --no-audit --no-fund --loglevel=error ||
+  echo "[ecc] npm install failed — continuing" >&2
 
-# Register ecc as a local Claude Code plugin. Idempotent: re-add / re-install when already
-# present are no-ops (tolerate their exit codes). Also declared in ~/.claude/settings.json.
-set +e
-claude plugin marketplace add "$ECC_SRC" --scope user
-claude plugin install ecc@ecc --scope user
-set -e
+# Register ecc as a local Claude Code plugin. Idempotent: re-add / re-install when
+# already present are no-ops. Also declared in ~/.claude/settings.json.
+claude plugin marketplace add "$ECC_SRC" --scope user ||
+  echo "[ecc] marketplace add failed — continuing" >&2
+claude plugin install ecc@ecc --scope user ||
+  echo "[ecc] plugin install failed — continuing" >&2
 
-# Rules: the plugin ships skills/commands/agents/hooks but NOT rules. ecc's rules live in
-# the repo; symlink them so ~/.claude/rules/ecc keeps loading the coding standards.
+# Rules: the plugin ships skills/commands/agents/hooks but NOT rules. ecc's rules live
+# in the repo; symlink them so ~/.claude/rules/ecc keeps loading the coding standards.
 rm -rf "$HOME/.claude/rules/ecc"
 mkdir -p "$HOME/.claude/rules"
-ln -s "$ECC_SRC/rules" "$HOME/.claude/rules/ecc"
+ln -s "$ECC_SRC/rules" "$HOME/.claude/rules/ecc" ||
+  echo "[ecc] rules symlink failed — continuing" >&2
 
-# Dedupe: install-apply (removed above) used to copy commands/agents/skills flat into
-# ~/.claude, which collided with the plugin. Drop the stale flat copies — verified 100%
-# ecc-owned. Personal content belongs in chezmoi source, not these dirs.
+# Dedupe: install-apply (an older ecc installer) copied commands/agents/skills flat
+# into ~/.claude, which collided with the plugin. Drop the stale flat copies —
+# verified 100% ecc-owned. Personal content belongs in chezmoi source, not these dirs.
 rm -rf "$HOME/.claude/commands" "$HOME/.claude/agents" "$HOME/.claude/skills/ecc"
 
 echo "[ecc] registered plugin ecc@ecc $ECC_VERSION; rules symlinked; flat copies removed"

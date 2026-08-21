@@ -1,7 +1,7 @@
 # Design: Manage ecc with chezmoi
 
 - **Date:** 2026-06-27
-- **Status:** Approved
+- **Status:** Approved — externals pairing superseded by `2026-08-21-pinned-tool-installer-design.md` (installer owns the clone)
 - **Upstream:** https://github.com/affaan-m/ecc (latest tag `v2.0.0`; was installed at `2.0.0-rc.1`)
 - **Scope:** chezmoi source repo at `~/.local/share/chezmoi`
 
