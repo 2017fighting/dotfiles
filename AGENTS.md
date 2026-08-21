@@ -47,7 +47,7 @@ The `just` command provides shortcuts (defined in `dot_config/just/justfile`):
 # List all available tasks
 just
 
-# Dump current Homebrew packages to Brewfile and re-add to chezmoi
+# Sync all package manifests from machine to chezmoi source (Brewfile + mise.toml)
 just dump
 
 # View differences
@@ -369,7 +369,7 @@ git push
 # 1. Install the package
 brew install package-name
 
-# 2. Update Brewfile
+# 2. Update manifests (Brewfile re-dumped + re-added; mise.toml if `mise use -g` was run)
 just dump
 
 # 3. Verify Brewfile was updated

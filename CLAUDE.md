@@ -18,12 +18,13 @@ TOML, YAML, and Lua. There is **no build step and no test suite.**
 | Re-sync a target file back into the source | `chezmoi re-add <file>` |
 | Resolve conflicts | `chezmoi merge-all` |
 | Task-runner shortcuts | `just` (then `just diff` / `just apply` / `just dump` / `just re-add`) |
-| Refresh Brewfile | `just dump` (= `brew bundle dump --force ...`) |
+| Sync package manifests | `just dump` (Brewfile via `brew bundle dump --force`, `mise.toml` via re-add) |
 | Lint shell | `shellcheck <file>` |
 | Format shell | `shfmt -i 2 -ci -bn -w <file>` |
 | Lint YAML / markdown | `yamllint <file>` / `markdownlint <file>` |
 
-`just dump` regenerates `dot_config/homebrew/Brewfile` and re-adds it to chezmoi.
+`just dump` syncs the package manifests: re-dumps + re-adds `dot_config/homebrew/Brewfile`
+and re-adds `dot_config/mise/mise.toml` (after `mise use -g`).
 
 ## Critical constraints
 

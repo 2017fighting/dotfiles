@@ -17,7 +17,7 @@
 
 简要来说只需 4 步：放好 `~/.config/chezmoi/key.txt` → 安装 chezmoi →（mac）安装 Homebrew → `chezmoi init --apply 2017fighting`。`run_once_before_10` / `run_onchange_before_20` 会自动完成 mise / bitwarden-cli 的安装、提示 `bw login` 与 `bw-ssh-add` 加载 key、以及 SSH externals（oh-my-zsh、nvim、oh-my-tmux）的 clone。
 
-apply 完成后可用 `just doctor` 自检 SSH 链路是否就绪（ssh-agent + key + GitHub 认证）。
+apply 完成后可用 `just doctor` 自检：SSH 链路（ssh-agent + key + GitHub 认证）、externals（从 .chezmoiexternals 推导）与 environment intake。
 
 ## 特殊文件/文件夹
 >

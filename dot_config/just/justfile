@@ -1,9 +1,27 @@
 default:
     just --list
 
-[group('brew')]
+# manifest sync: machine → source, for every dumpable package manifest.
+# Brewfile (brew bundle dump) + mise.toml (explicit re-add — bare re-add would
+# sweep in unrelated age churn). Packages.pacman/.aur are NOT here: they are
+# source-curated manifests with comments a target dump would destroy.
+[group('manifests')]
 dump:
-    brew bundle dump --force --file="~/.config/homebrew/Brewfile" && chezmoi re-add ~/.config/homebrew/Brewfile
+    #!/usr/bin/env sh
+    set -u
+    if command -v brew >/dev/null 2>&1; then
+      brew bundle dump --force --file="$HOME/.config/homebrew/Brewfile" && \
+        chezmoi re-add "$HOME/.config/homebrew/Brewfile" && echo "✓ Brewfile re-added"
+    else
+      echo "· brew not found — skipping Brewfile"
+    fi
+    if command -v mise >/dev/null 2>&1; then
+      chezmoi re-add "$HOME/.config/mise/mise.toml" && echo "✓ mise.toml re-added"
+    else
+      echo "· mise not found — skipping mise.toml"
+    fi
+    echo "--- captured (chezmoi source git status) ---"
+    git -C "$(chezmoi source-path)" status --short || true
 
 [group('chezmoi')]
 diff:
@@ -37,7 +55,8 @@ cd:
 init:
 	chezmoi init
 
-# 校验 SSH 链路是否就绪：ssh-agent 运行 + key 已加载（bw-ssh-add）+ GitHub 能用 key 认证 + SSH externals 已 clone。
+# 仓库的可执行检查面（the repo's check surface）：ssh-agent 运行 + key 已加载（bw-ssh-add）+ GitHub
+# 能用 key 认证 + externals 已 clone（从 .chezmoiexternals/ 推导）+ environment intake 就绪。
 # 退出码非 0 表示有检查未通过（可用于 apply 后自检 / CI gate）。
 [group('verify')]
 doctor:
@@ -72,10 +91,49 @@ doctor:
 	  fail "GitHub SSH auth failed (key not served / vault locked)"
 	fi
 
-	hdr "ssh externals"
-	for d in "$HOME/.oh-my-zsh" "$HOME/.config/nvim" "$HOME/.tmux"; do
-	  if [ -d "$d/.git" ]; then pass "cloned: $d"; else fail "missing: $d (chezmoi apply --refresh-externals)"; fi
+	hdr "externals"
+	# Derived from .chezmoiexternals/ — new externals are checked automatically.
+	# git-repo targets need a .git dir; type: file targets need the file to exist.
+	# Top-level keys are home-relative paths in this repo; commented-out entries
+	# (leading #) don't match the key regex.
+	EXT_DIR="$(chezmoi source-path .chezmoiexternals 2>/dev/null || \
+	  printf '%s/.local/share/chezmoi/.chezmoiexternals' "$HOME")"
+	for f in "$EXT_DIR"/*.yaml "$EXT_DIR"/*.yaml.tmpl; do
+	  [ -f "$f" ] || continue
+	  awk '
+	    /^[A-Za-z0-9._~\/:-]+:$/ { path=$0; sub(/:$/, "", path) }
+	    /^[ \t]+type:[ \t]*/ { ty=$0; sub(/^[ \t]+type:[ \t]*/, "", ty); print path "\t" ty }
+	  ' "$f"
+	done | while IFS="$(printf '\t')" read -r p ty; do
+	  [ -n "$p" ] || continue
+	  case "$ty" in
+	    git-repo)
+	      if [ -d "$HOME/$p/.git" ]; then pass "cloned: $p"; else fail "missing: $p (chezmoi apply --refresh-externals)"; fi
+	      ;;
+	    file)
+	      if [ -f "$HOME/$p" ]; then pass "file: $p"; else fail "missing: $p (chezmoi apply --refresh-externals)"; fi
+	      ;;
+	  esac
 	done
+
+	hdr "environment intake"
+	# Every env.d entry in source (plain + encrypted) must exist on target, and
+	# the glob loop must actually run in the login-shell shape launchd/systemd
+	# spawns (sentinel: RCLONE_FILTER_FROM set AND its target file present).
+	ENV_SRC="$(chezmoi source-path dot_config/zsh/env.d 2>/dev/null || \
+	  printf '%s/.local/share/chezmoi/dot_config/zsh/env.d' "$HOME")"
+	for f in "$ENV_SRC"/*; do
+	  [ -f "$f" ] || continue
+	  b="$(basename "$f")"
+	  case "$b" in encrypted_private_*) b="${b#encrypted_private_}"; b="${b%.age}" ;; esac
+	  if [ -f "$HOME/.config/zsh/env.d/$b" ]; then pass "intake: $b"; else fail "intake: $b missing (chezmoi apply)"; fi
+	done
+	val="$(zsh -lc 'printf %s "${RCLONE_FILTER_FROM:-}"' 2>/dev/null)"
+	if [ -n "$val" ] && [ -f "$val" ]; then
+	  pass "intake glob loads in login shell ($val)"
+	else
+	  fail "intake sentinel failed (zsh -lc RCLONE_FILTER_FROM)"
+	fi
 
 	exit "$ok"
 
