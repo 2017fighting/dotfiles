@@ -1,0 +1,8 @@
+# environment intake — every shell's entry point.
+# Sources each ~/.config/zsh/env.d/*.zsh (plain snippets and chezmoi-decrypted
+# files are equivalent citizens). New tool environment = new file in env.d/,
+# never a decrypt-edit-encrypt cycle here. See CONTEXT.md.
+for _f in "$HOME"/.config/zsh/env.d/*.zsh(N); do
+  . "$_f"
+done
+unset _f
