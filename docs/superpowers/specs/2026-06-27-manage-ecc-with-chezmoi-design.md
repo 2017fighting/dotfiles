@@ -2,7 +2,7 @@
 
 - **Date:** 2026-06-27
 - **Status:** Approved — externals pairing superseded by `2026-08-21-pinned-tool-installer-design.md` (installer owns the clone)
-- **Upstream:** https://github.com/affaan-m/ecc (latest tag `v2.0.0`; was installed at `2.0.0-rc.1`)
+- **Upstream:** <https://github.com/affaan-m/ecc> (latest tag `v2.0.0`; was installed at `2.0.0-rc.1`)
 - **Scope:** chezmoi source repo at `~/.local/share/chezmoi`
 
 ## Context
@@ -49,13 +49,16 @@ with just `chezmoi apply`.
 ## Files added to chezmoi source
 
 1. **`.chezmoidata.yaml`** — single source of truth for version + profile:
+
    ```yaml
    ecc:
      version: "v2.0.0"
      profile: "full"
    ```
+
 2. **`.chezmoiexternals/ecc.yaml.tmpl`** — declarative clone (mirrors oh-my-zsh/nvim
    pattern), pinned to the version tag, weekly refresh:
+
    ```yaml
    .local/share/ecc:
      type: git-repo
@@ -64,11 +67,13 @@ with just `chezmoi apply`.
        args: ["--branch", "{{ .ecc.version }}"]
      refreshPeriod: 168h
    ```
+
 3. **`.chezmoiscripts/run_onchange_after_70-ecc-install.sh.tmpl`** — runs the installer
    after the clone is refreshed. Embeds the version so bumping `.chezmoidata.yaml`
    re-triggers it. Idempotent; guards on node presence + clone presence.
 4. **`.chezmoiignore`** (append) — exclude installer-owned paths from chezmoi's tracking
    so they don't show as drift, and exclude this `docs/` tree from deployment:
+
    ```
    .claude/rules/ecc
    .claude/skills/ecc

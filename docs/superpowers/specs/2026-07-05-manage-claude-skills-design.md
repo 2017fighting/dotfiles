@@ -2,7 +2,7 @@
 
 - **Date:** 2026-07-05
 - **Status:** Approved — externals pairing superseded by `2026-08-21-pinned-tool-installer-design.md` (installer owns the clone)
-- **Upstream:** https://github.com/backnotprop/plannotator (currently installed `0.21.3`, commit `1eee3eb`)
+- **Upstream:** <https://github.com/backnotprop/plannotator> (currently installed `0.21.3`, commit `1eee3eb`)
 - **Scope:** chezmoi source repo at `~/.local/share/chezmoi`
 
 ## Context
@@ -178,15 +178,18 @@ those later, edit the flag in the script.
 ## File plan
 
 New:
+
 - `.chezmoiexternals/plannotator.yaml.tmpl`
 - `.chezmoiscripts/run_onchange_after_71-plannotator-install.sh.tmpl`
 - `dot_claude/skills/.keep`
 - `docs/superpowers/specs/2026-07-05-manage-claude-skills-design.md` (this doc)
 
 Modified:
+
 - `.chezmoidata.yaml` (add `plugins.plannotator.{version,ref,skipSem}`)
 
 Unchanged:
+
 - `~/.claude/settings.json`, `dot_claude/CLAUDE.md`, all ecc files.
 
 A new machine reproduces plannotator (plugin + binary layer) and any
