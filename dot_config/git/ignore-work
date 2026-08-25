@@ -605,6 +605,9 @@ $RECYCLE.BIN/
 **/.claude/worktrees
 .mcp.json
 
+# pi agent
+**/.pi
+
 # Start codegraph
 .codegraph
 
