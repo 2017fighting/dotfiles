@@ -630,5 +630,6 @@ browser-profile/
 # 抓包
 *.har
 *.chls
+*.chlz
 flows
 
