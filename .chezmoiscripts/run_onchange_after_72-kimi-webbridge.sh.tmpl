@@ -1,0 +1,34 @@
+#!/bin/sh
+# Install kimi-webbridge (browser-control daemon + agent skills) via the official
+# installer at https://cdn.kimi.com/webbridge/install.sh. This script installs:
+#   ~/.kimi-webbridge/bin/kimi-webbridge   (binary; daemon state lives alongside)
+#   ~/.claude/skills/kimi-webbridge        (canonical skill copy)
+# The pi bridge (~/.agents/skills/kimi-webbridge) is NOT created here — it is a
+# chezmoi-managed symlink_ source entry pointing at the canonical copy above.
+# See AGENTS.md "kimi-webbridge" for the full management boundary.
+#
+# Day-to-day upgrades: `kimi-webbridge upgrade` (aligns binary AND skills).
+# This script re-runs only when its own content changes — that is the
+# self-healing path, at the cost of one ~10MB re-download.
+#
+# Error philosophy (aligned with 70-ecc / 71-plannotator):
+#   LOUD install — installer failure exits 1, so chezmoi does NOT record this
+#                  script's hash and retries on the next apply.
+#
+# No `set -e`: lifecycle scripts must not block `chezmoi apply` on partial
+# failure — except the installer below, which deliberately exits 1.
+
+command -v curl >/dev/null 2>&1 || {
+  echo "[kimi-webbridge] curl not found on PATH — skipping install." >&2
+  exit 0
+}
+
+echo "[kimi-webbridge] running official installer (latest; daemon starts, skill lands in ~/.claude/skills)"
+if timeout 600 curl -fsSL https://cdn.kimi.com/webbridge/install.sh | bash; then
+  echo "[kimi-webbridge] installed — pi bridge is the chezmoi-managed symlink ~/.agents/skills/kimi-webbridge"
+else
+  echo "[kimi-webbridge] installer failed (timeout or error) — exiting 1 so chezmoi retries on the next apply." >&2
+  exit 1
+fi
+
+exit 0

@@ -336,6 +336,37 @@ prettier --write path/to/file
 - Commit messages: verbose, use template at `~/.config/git/message`
 - Use conventional commit aliases if needed (defined in git config)
 
+### kimi-webbridge (Browser-Control Daemon + Skill)
+
+Management boundary — chezmoi owns exactly two things:
+
+- `.chezmoiscripts/run_onchange_after_72-kimi-webbridge.sh.tmpl` — runs the official
+  installer (`https://cdn.kimi.com/webbridge/install.sh`, always latest, daemon starts
+  immediately). Re-runs only when the script's own content changes (self-healing path).
+- `symlink_dot_agents/skills/kimi-webbridge.tmpl` — bridges pi's global skill dir
+  (`~/.agents/skills/kimi-webbridge`) to the installer-owned canonical copy at
+  `~/.claude/skills/kimi-webbridge`, because `kimi-webbridge install-skill` does not
+  (yet) know about pi's runtime.
+
+Everything else is owned by the tool itself — never `chezmoi add` / `re-add` these:
+
+- `~/.kimi-webbridge/` — binary, `identity.json` (machine credential), `daemon.pid`, `logs/`
+- `~/.claude/skills/kimi-webbridge/` — rewritten by the installer / `upgrade`
+- The rest of `~/.agents/skills/` — populated by a separate skill manager
+  (see `~/.agents/.skill-lock.json`), not by chezmoi
+
+Operations:
+
+- Day-to-day upgrade: `kimi-webbridge upgrade` (aligns binary AND all installed skills).
+  Do NOT `chezmoi re-add` any webbridge path.
+- Daemon has no autostart unit by design; after a reboot run `kimi-webbridge start`.
+  Check with `kimi-webbridge status`.
+- `kimi-webbridge uninstall` removes `~/.kimi-webbridge/` but leaves the skill copies
+  and a dangling `~/.agents/skills/kimi-webbridge` symlink — remove that symlink too.
+- If upstream ever installs into `~/.agents/skills/` natively, delete the
+  `symlink_dot_agents/skills/kimi-webbridge.tmpl` source entry and let the installer
+  own the directory.
+
 ## Common Tasks for Agents
 
 ### Adding a New Configuration File
