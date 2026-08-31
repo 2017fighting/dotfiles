@@ -35,6 +35,7 @@ claude = "latest"
 "github:saladday/cc-switch-cli" = "latest"
 "github:pranshuparmar/witr" = "latest"
 "github:can1357/oh-my-pi" = "latest"
+"github:multica-ai/multica" = "latest"
 # uv
 # "uv:serena" = "latest"
 # npm
