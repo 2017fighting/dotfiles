@@ -9,6 +9,17 @@
 # force to use screen-256color
 set -g default-terminal "screen-256color" #!important
 
+# force to enable tmux extended-keys
+%if #{>=:#{s/^[^0-9]+//:#{version}},3.2}
+set -gF extended-keys 'on' # needed by Control + Shift bindings
+%endif
+%if #{>=:#{s/^[^0-9]+//:#{version}},3.3}
+set -gF extended-keys 'always' # needed by Control + Shift bindings
+%endif
+
+# allow osc52
+set -gq allow-passthrough on
+
 # -- bindings ------------------------------------------------------------------
 
 # preserve tmux stock bindings,
