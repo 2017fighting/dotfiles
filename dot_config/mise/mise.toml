@@ -26,6 +26,7 @@ claude = "latest"
 
 # cargo
 # "cargo:vault-conductor" = { git = "https://github.com/pirafrank/conductor", version = "latest", locked = true }
+"cargo:pdf-inspector" = "latest"
 # conda
 # imagemagick = "latest"
 # pipx
