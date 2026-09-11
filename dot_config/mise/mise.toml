@@ -48,6 +48,7 @@ claude = "latest"
 "npm:chrome-devtools-mcp" = "latest"
 "npm:skills" = "latest"
 pi = "latest"
+age = "latest"
 
 [settings]
 # tools can read the versions files used by other version managers
