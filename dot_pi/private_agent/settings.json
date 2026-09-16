@@ -8,8 +8,8 @@
     "grep"
   ],
   "theme": "dark",
-  "defaultProvider": "zai-coding-cn",
-  "defaultModel": "glm-5.3",
+  "defaultProvider": "commandcode",
+  "defaultModel": "deepseek/deepseek-v4.1-flash",
   "defaultThinkingLevel": "high",
   "tuiMode": "fullscreen",
   "hideThinkingBlock": false,
@@ -23,7 +23,9 @@
     "npm:pi-codebuddy-oauth",
     "npm:pi-antigravity",
     "npm:@narumitw/pi-usage",
-    "npm:@pi-unipi/notify"
+    "npm:@pi-unipi/notify",
+    "npm:pi-commandcode-provider",
+    "npm:pi-quota-monitoring"
   ],
   "transport": "auto",
   "fullscreenExitOutput": "resume-hint",
