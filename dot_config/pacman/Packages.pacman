@@ -43,6 +43,7 @@ tree             # directory tree viewer
 tree-sitter      # incremental parsing lib + CLI  [brew: tree-sitter + tree-sitter-cli]
 urlscan          # view/extract URLs from a message
 wget             # internet file retriever
+wl-clipboard     # wl-copy/wl-paste — clipboard backend under WSLg; apps (pi, nvim) copy via this, not OSC 52
 yazi             # terminal file manager
 yq               # YAML/JSON/XML/CSV processor
 zoxide           # smarter cd

@@ -17,7 +17,13 @@ set -gF extended-keys 'on' # needed by Control + Shift bindings
 set -gF extended-keys 'always' # needed by Control + Shift bindings
 %endif
 
-# allow osc52
+# allow DCS passthrough (\ePtmux;...\e\\) from panes, incl. over ssh/nested tmux.
+# NOTE: this does NOT forward a *bare* OSC 52 from an application. tmux handles
+# OSC 52 itself under the default `set-clipboard external`: it swallows the
+# application's sequence and emits its own. So an app writing a bare
+# `\e]52;c;<base64>\a` silently "succeeds" while nothing reaches the terminal
+# clipboard — wrap it in DCS above, or give the app a native backend (wl-copy).
+# See docs/superpowers/specs/2026-09-16-clipboard-osc52-design.md
 set -gq allow-passthrough on
 
 # -- bindings ------------------------------------------------------------------

@@ -160,6 +160,28 @@ doctor:
 	  fail "intake sentinel failed (zsh -lc RCLONE_FILTER_FROM)"
 	fi
 
+	hdr "clipboard backend"
+	# A *bare* OSC 52 from an app is swallowed by tmux's default `set-clipboard
+	# external` (tmux handles the sequence itself and emits its own on copy), so
+	# the path that actually works is a native backend. With no wl-copy/xclip/xsel
+	# an app reports a successful copy that lands nowhere — silent failure, which
+	# is exactly what this check turns loud. Only asserted where a display exists.
+	if [ -n "${WAYLAND_DISPLAY:-}" ]; then
+	  if command -v wl-copy >/dev/null 2>&1; then
+	    pass "wl-copy present (Wayland clipboard backend)"
+	  else
+	    fail "wl-copy missing on a Wayland session — copies by OSC 52 fail silently (pacman -S wl-clipboard)"
+	  fi
+	elif [ -n "${DISPLAY:-}" ]; then
+	  if command -v xclip >/dev/null 2>&1 || command -v xsel >/dev/null 2>&1; then
+	    pass "xclip/xsel present (X11 clipboard backend)"
+	  else
+	    fail "no X11 clipboard backend — copies by OSC 52 fail silently (pacman -S xclip)"
+	  fi
+	else
+	  pass "no Wayland/X11 display — clipboard backend not required"
+	fi
+
 	if [ -s "$FAILS" ]; then
 	  exit 1
 	fi

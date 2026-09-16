@@ -48,3 +48,27 @@ post-install deletion). Error philosophy: loud clone, tolerant tail
 `hapi.runner.workspaceRoots` in `.chezmoidata.yaml` is one data entry expanded by
 two adapters (launchd plist on macOS, systemd unit on Linux) — the pattern other
 modules in this repo should copy: one interface, platform specifics behind it.
+
+## clipboard backend (`wl-copy`)
+
+The program that owns the OS clipboard on behalf of a TUI app. Under WSLg this is
+`wl-copy` (from `wl-clipboard`). Apps that find no backend fall back to a bare
+OSC 52, which tmux swallows — so the backend's presence is what makes copying
+work, and its absence is a *silent* failure. Asserted by `just doctor`.
+_Avoid_: clipboard tool, clipboard command (names the binary, not the role)
+
+## bare OSC 52
+
+An application writing `\e]52;c;<base64>\a` straight to its stdout to set the
+terminal clipboard itself. Under tmux's default `set-clipboard external` this is
+swallowed: tmux handles OSC 52 itself and never forwards the application's
+sequence. Emitting it therefore *looks* like success while nothing is copied.
+_Avoid_: OSC 52 (alone — ambiguous between the app's sequence and tmux's own)
+
+## DCS passthrough wrapper
+
+`\ePtmux;\e\e]52;...\a\e\\` — the DCS envelope that carries a bare OSC 52
+*through* tmux, bypassing tmux's OSC 52 handling. The one form that works under
+`set-clipboard external`, and also the one that survives ssh/nested tmux. Not
+required for tmux's own copy-mode `y`, which tmux emits correctly by itself.
+_Avoid_: passthrough (unqualified — could mean the `allow-passthrough` option)
