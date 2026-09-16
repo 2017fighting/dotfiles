@@ -22,7 +22,8 @@
     "npm:pi-web-access",
     "npm:pi-codebuddy-oauth",
     "npm:pi-antigravity",
-    "npm:@narumitw/pi-usage"
+    "npm:@narumitw/pi-usage",
+    "npm:@pi-unipi/notify"
   ],
   "transport": "auto",
   "fullscreenExitOutput": "resume-hint",
