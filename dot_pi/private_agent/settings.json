@@ -1,0 +1,63 @@
+{
+  "lastChangelogVersion": "0.85.1",
+  "defaultTools": [
+    "read",
+    "bash",
+    "edit",
+    "write",
+    "grep"
+  ],
+  "theme": "dark",
+  "defaultProvider": "zai-coding-cn",
+  "defaultModel": "glm-5.3",
+  "defaultThinkingLevel": "high",
+  "tuiMode": "fullscreen",
+  "hideThinkingBlock": false,
+  "packages": [
+    "npm:@juicesharp/rpiv-ask-user-question",
+    "npm:@juicesharp/rpiv-todo",
+    "npm:pi-background-tasks",
+    "npm:pi-subagents",
+    "npm:pi-token-speed",
+    "npm:pi-web-access",
+    "npm:pi-codebuddy-oauth",
+    "npm:pi-antigravity",
+    "npm:@narumitw/pi-usage"
+  ],
+  "transport": "auto",
+  "fullscreenExitOutput": "resume-hint",
+  "fullscreenCopyOnSelect": true,
+  "treeFilterMode": "default",
+  "doubleEscapeAction": "tree",
+  "defaultProjectTrust": "ask",
+  "showCacheMissNotices": true,
+  "markdown": {
+    "mermaid": "final"
+  },
+  "terminal": {
+    "showTerminalProgress": true
+  },
+  "tokenSpeed": {
+    "display": "full",
+    "icon": "",
+    "useProviderTokens": false,
+    "updateInterval": 0,
+    "countStrategy": "direct",
+    "slidingWindow": 1000,
+    "endTpsBehavior": "average",
+    "thresholds": {
+      "slow": 10,
+      "blazing": 150,
+      "fast": 100,
+      "medium": 50
+    },
+    "colors": {
+      "blazing": "#a6e3a1",
+      "fast": "#89b4fa",
+      "medium": "#f9e2af",
+      "slow": "#f38ba8"
+    }
+  },
+  "followUpMode": "one-at-a-time",
+  "fullscreenScrollbar": "hidden"
+}
