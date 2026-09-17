@@ -3,10 +3,11 @@
 > 目标：在一台干净的 macOS / Linux 上，用**一次** `chezmoi init --apply` 把整套环境拉起来。
 > 前置脚本 `run_once_before_10` / `run_onchange_before_20` 会自动安装 mise / bitwarden-cli、
 > 提示 `bw login` + `bw-ssh-add` 加载 key、clone SSH externals——**无需手动分步操作**。
+> 唯一例外：`~/.config/chezmoi/key.txt`（chezmoi 身份钥，Bitwarden 里取），见下。
 
 ## 最小手动步骤（仅这 4 步必须人工）
 
-### 1. 放置 age 解密私钥
+### 1. 放置 chezmoi 身份私钥
 
 ```sh
 mkdir -p ~/.config/chezmoi
@@ -14,7 +15,11 @@ cp /path/to/key.txt ~/.config/chezmoi/key.txt
 chmod 600 ~/.config/chezmoi/key.txt
 ```
 
-没有它无法解密 `encrypted_*.age`（含 `~/.ssh/config`、`known_hosts`）。
+没有它无法解密 `encrypted_*.age`（含 `~/.ssh/config`、`known_hosts`）。它是**唯一**手工步骤，存在 Bitwarden 里（不放 TrueNAS、不进任何池）。
+
+> 另一把 age 私钥（**sops** 用的那把，解 `*.sops.yaml`）**不是**手工步骤：它是 chezmoi 管的加密文件 `dot_config/sops/age/encrypted_private_keys.txt.age`，落到 `~/.config/sops/age/keys.txt`（mode 600）。以前它有一份明文放在 TrueNAS 池里，2026-09-17 已删除（ADR-0011 in home-ops）。两把钥匙故意分开保管：sops 那把必须在 chezmoi 没跑起来时也能读到。
+
+> Terraform 的凭据（PVE token、R2 的 S3 凭据）同样走 env.d：`~/.config/zsh/env.d/proxmox.zsh`、`.../tfbackend.zsh`，由 `~/.zshenv` 在每个 shell 里 source（见 `CONTEXT.md` 的 environment intake）。
 
 ### 2. 安装 chezmoi（macOS / Linux 通用）
 
