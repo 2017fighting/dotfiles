@@ -22,7 +22,6 @@ fd = "latest"
 rg = "latest"
 # php = "latest"
 java = "latest"
-julia = "latest"
 claude = "latest"
 "claude-powerline" = "latest"
 
