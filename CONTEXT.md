@@ -8,7 +8,7 @@ module or concept that architecture reviews should use instead of describing fil
 Every `*.zsh` under `~/.config/zsh/env.d/` is sourced by `~/.zshenv` in **every**
 shell — interactive, non-interactive, and the login shells that launchd/systemd
 spawn for hapi-runner (which rely on zshenv supplying `HAPI_API_URL`). Plain
-snippets (e.g. `ecc.zsh`) and chezmoi-decrypted files (e.g. `hapi.zsh.age`) are
+snippets (e.g. `cloudflare.zsh`) and chezmoi-decrypted files (e.g. `hapi.zsh.age`) are
 equivalent citizens: drop a file in, every shell inherits it. New tool environment
 belongs here, never as a decrypt-edit-encrypt cycle on a shared blob.
 

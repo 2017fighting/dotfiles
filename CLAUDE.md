@@ -46,10 +46,10 @@ and re-adds `dot_config/mise/mise.toml` (after `mise use -g`).
   `symlink_`, `encrypted_` (with `.age`).
 - Scripts: `run_` (every apply), `run_once_` (once per machine),
   `run_onchange_` (when content hash changes).
-- Third-party Claude plugins (plannotator, ecc): `.chezmoiexternals/<name>.yaml.tmpl`
-  clones pin a tag; `run_onchange_after_7X-<name>-install.sh.tmpl` re-registers the
-  plugin + runs upstream installer. Bump `plugins.<name>.{version,ref}` in
-  `.chezmoidata.yaml` to upgrade. Self-authored skills go in `dot_claude/skills/`.
+- Third-party tools that need a pinned install belong in
+  `.chezmoiscripts/run_onchange_after_7X-<name>-install.sh.tmpl` + a `.chezmoidata.yaml`
+  entry with `clonePath`/`version` (see docs/superpowers/specs/2026-08-21-pinned-tool-installer-design.md).
+  Self-authored skills go in `dot_claude/skills/`.
 - Timing/order: `before_` / `after_`, numeric prefix controls order (`10-`, `20-`, …).
 
 ## Go template essentials

@@ -1,14 +1,3 @@
-# ecc (Everything Claude Code) — managed by chezmoi as a pinned-tool installer:
-# this script owns the clone at clonePath (no .chezmoiexternals entry — externals
-# are for HEAD-tracking clones only; a pinned tag + refreshPeriod would abort
-# apply on detached HEAD). Bump `version` to upgrade; the run_onchange installer
-# re-runs automatically. See docs/superpowers/specs/2026-08-21-pinned-tool-installer-design.md
-ecc:
-  # Home-relative clone location — consumed by the installer script and `just doctor`.
-  clonePath: .local/share/ecc
-  version: "v2.0.0"
-  profile: "full"
-
 # hapi runner — supervised by launchd (macOS) / systemd (Linux). The run_onchange
 # loader script (.chezmoiscripts/run_onchange_after_80-hapi-runner.sh.tmpl) embeds
 # this version; bump it to force the agent/unit to reload after editing the plist
@@ -36,20 +25,3 @@ ssh:
     version: "1"
   keyItemIds:
     - "1fc48db0-b2a7-4eb4-9877-33847b9f3075"
-
-# Claude Code third-party plugins — managed by chezmoi as pinned-tool installers:
-# each has a run_onchange_after_7X-<name>-install.sh.tmpl that OWNS the clone at
-# clonePath (no .chezmoiexternals entry). Bump version/ref to upgrade.
-plugins:
-  plannotator:
-    # Home-relative clone location — consumed by the installer script and `just doctor`.
-    clonePath: .local/share/plannotator
-    # Passed to install.sh --version and used to gate binary-layer reinstall.
-    version: "0.21.3"
-    # git tag/commit the installer clones (--branch) AND force-checks out.
-    # Confirmed via `git ls-remote --tags` — upstream uses vX.Y.Z naming.
-    # v0.21.3 -> commit ec8342c.
-    ref: "v0.21.3"
-    # Sets PLANNOTATOR_SKIP_SEM_INSTALL=1 (sem code-review sidecar not currently
-    # installed; toggle to false to install sem alongside the binary).
-    skipSem: true

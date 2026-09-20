@@ -33,7 +33,6 @@ claude = "latest"
 # pipx
 "copier" = "latest"
 # github
-# "github:backnotprop/plannotator" = "latest"
 "github:saladday/cc-switch-cli" = "latest"
 "github:pranshuparmar/witr" = "latest"
 "github:can1357/oh-my-pi" = "latest"
@@ -50,6 +49,7 @@ claude = "latest"
 "npm:skills" = "latest"
 pi = "latest"
 age = "latest"
+ansible = { version = "latest", expose = ["ansible-core"] }
 
 [settings]
 # tools can read the versions files used by other version managers

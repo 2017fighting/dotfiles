@@ -7,10 +7,8 @@ CONTEXT.md
 # to avoid reporting this files have changed
 .oh-my-zsh/cache
 
-# ecc is installed as a local Claude Code plugin by
-# .chezmoiscripts/run_onchange_after_70-ecc-install.sh.tmpl; everything below is owned by
-# that script / the plugin runtime, not chezmoi.
-.claude/rules/ecc
+# ~/.claude/{commands,agents,plugins} are owned by the Claude Code plugin runtime
+# and skill managers, not by chezmoi — never manage them here.
 .claude/commands
 .claude/agents
 .claude/plugins

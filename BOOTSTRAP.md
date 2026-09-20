@@ -47,13 +47,13 @@ chezmoi init --apply 2017fighting
 
 - **`before_10`**：用 brew / pacman 装 `bitwarden-cli` + `mise`；
 - **`before_20`**：提前落地 `~/.ssh/config`、`known_hosts`，启动系统 ssh-agent（systemd 单元），**提示你 `bw login`（邮箱 + 主密码 + 2FA）与 `bw-ssh-add`（主密码，把 key 灌进 ssh-agent）**；
-- **正常 phase**：写所有配置文件 + clone externals —— SSH 类（oh-my-zsh / nvim / oh-my-tmux）走 ssh-agent 里的 key；HTTPS 类（ecc / catppuccin）不需要 key；
-- **`after_*`**：`brew bundle` 还原、pacman 还原、`mise install` 全套运行时、macOS 系统设置、ecc 安装、hapi runner、ssh-agent 单元 enable。
+- **正常 phase**：写所有配置文件 + clone externals —— SSH 类（oh-my-zsh / nvim / oh-my-tmux）走 ssh-agent 里的 key；HTTPS 类（catppuccin）不需要 key；
+- **`after_*`**：`brew bundle` 还原、pacman 还原、`mise install` 全套运行时、macOS 系统设置、hapi runner、ssh-agent 单元 enable。
 
 ## 为什么这些步骤不能省
 
 - **`bw login` 必须人工**：Bitwarden 主密码从不落盘，**配置文件里没有任何登录凭据**。`data.json` 源只是一个把 macOS 路径重定向到 `~/.config/` 的符号链接，其目标文件在登录之前根本不存在。
-- **key 必须先灌进 ssh-agent 才能给 SSH externals 用**：oh-my-zsh / nvim / oh-my-tmux 用 `git@github.com:`，靠 `SSH_AUTH_SOCK` 走系统 ssh-agent。`bw-ssh-add` 从 Bitwarden 取 key 灌进去；vaultwarden 之后挂掉也不影响（key 已在 agent 内存里）。ecc / catppuccin 是 HTTPS，不需要。
+- **key 必须先灌进 ssh-agent 才能给 SSH externals 用**：oh-my-zsh / nvim / oh-my-tmux 用 `git@github.com:`，靠 `SSH_AUTH_SOCK` 走系统 ssh-agent。`bw-ssh-add` 从 Bitwarden 取 key 灌进去；vaultwarden 之后挂掉也不影响（key 已在 agent 内存里）。catppuccin 是 HTTPS，不需要。
 
 ## 注意点 / 坑
 
