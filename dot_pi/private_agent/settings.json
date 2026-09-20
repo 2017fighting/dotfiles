@@ -26,7 +26,8 @@
     "npm:@pi-unipi/notify",
     "npm:pi-commandcode-provider",
     "npm:pi-quota-monitoring",
-    "npm:pi-zcode-headers"
+    "npm:pi-zcode-headers",
+    "git:github.com/2017fighting/pi-tokens"
   ],
   "transport": "auto",
   "fullscreenExitOutput": "resume-hint",
