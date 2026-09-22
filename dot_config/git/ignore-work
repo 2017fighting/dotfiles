@@ -633,3 +633,5 @@ browser-profile/
 *.chlz
 flows
 docs/抓包/
+
+.zcodeignore
