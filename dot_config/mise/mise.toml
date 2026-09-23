@@ -50,6 +50,7 @@ claude = "latest"
 pi = "latest"
 age = "latest"
 ansible = { version = "latest", expose = ["ansible-core"] }
+herdr = "latest"
 
 [settings]
 # tools can read the versions files used by other version managers
