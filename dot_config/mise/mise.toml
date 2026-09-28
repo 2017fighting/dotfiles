@@ -23,7 +23,7 @@ rg = "latest"
 # php = "latest"
 java = "latest"
 claude = "latest"
-"claude-powerline" = "latest"
+# "claude-powerline" = "latest"
 
 # cargo
 # "cargo:vault-conductor" = { git = "https://github.com/pirafrank/conductor", version = "latest", locked = true }
@@ -31,26 +31,26 @@ claude = "latest"
 # conda
 # imagemagick = "latest"
 # pipx
-"copier" = "latest"
+# "copier" = "latest"
 # github
-"github:saladday/cc-switch-cli" = "latest"
-"github:pranshuparmar/witr" = "latest"
-"github:can1357/oh-my-pi" = "latest"
-"github:multica-ai/multica" = "latest"
-"github:pouriyajamshidi/tcping" = "latest"
+# "github:saladday/cc-switch-cli" = "latest"
+# "github:pranshuparmar/witr" = "latest"
+# "github:can1357/oh-my-pi" = "latest"
+# "github:multica-ai/multica" = "latest"
+# "github:pouriyajamshidi/tcping" = "latest"
 # uv
 # "uv:serena" = "latest"
 # npm
 "npm:@twsxtd/hapi" = "latest"
-"npm:tavily-mcp" = "latest"
+# "npm:tavily-mcp" = "latest"
 "wrangler" = "latest"
-"npm:@colbymchenry/codegraph" = "latest"
-"npm:chrome-devtools-mcp" = "latest"
+# "npm:@colbymchenry/codegraph" = "latest"
+# "npm:chrome-devtools-mcp" = "latest"
 "npm:skills" = "latest"
 pi = "latest"
 age = "latest"
 ansible = { version = "latest", expose = ["ansible-core"] }
-herdr = "latest"
+# herdr = "latest"
 
 [settings]
 # tools can read the versions files used by other version managers
