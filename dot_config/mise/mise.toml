@@ -49,7 +49,6 @@ claude = "latest"
 "npm:skills" = "latest"
 pi = "latest"
 age = "latest"
-ansible = { version = "latest", expose = ["ansible-core"] }
 # herdr = "latest"
 
 [settings]
