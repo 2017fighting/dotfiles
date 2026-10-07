@@ -168,3 +168,12 @@ eval "$(navi widget zsh)"
 # kimi-webbridge
 eval "$(kimi-webbridge completion zsh)"
 
+
+# >>> android-capture (AVD / mitmproxy / frida for javdb app traffic) >>>
+# Added by the android-capture setup. Revert with:
+#   mv ~/.zshrc.bak-before-android-capture ~/.zshrc
+export ANDROID_HOME="$HOME/Library/Android/sdk"
+export ANDROID_SDK_ROOT="$ANDROID_HOME"
+# platform-tools first so the SDK's adb wins over the homebrew cask one
+export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
+# >>> end android-capture <<<
