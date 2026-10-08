@@ -38,6 +38,7 @@ java = "latest"
 # "github:can1357/oh-my-pi" = "latest"
 # "github:multica-ai/multica" = "latest"
 # "github:pouriyajamshidi/tcping" = "latest"
+"github:Tencent/BrowserSkill" = "latest"
 # uv
 # "uv:serena" = "latest"
 # npm
