@@ -9,7 +9,6 @@ fi
 
 # If you come from bash you might have to change your $PATH.
 export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
-export PATH=$HOME/.kimi-webbridge/bin:$PATH
 
 # Path to your Oh My Zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
@@ -157,16 +156,11 @@ source $ZSH/oh-my-zsh.sh
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 # alias ai-commit='opencode run "git add all, then /git-commit, no confirmation required"'
 alias vim=nvim
-alias claude=hapi
 
 # atuin
 eval "$(atuin init zsh --disable-up-arrow)"
 # navi
 eval "$(navi widget zsh)"
-# opencode
-# eval "$(opencode completion)"
-# kimi-webbridge
-eval "$(kimi-webbridge completion zsh)"
 
 
 # >>> android-capture (AVD / mitmproxy / frida for javdb app traffic) >>>
