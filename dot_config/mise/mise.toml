@@ -51,6 +51,7 @@ java = "latest"
 # "npm:rea-agents" = "latest"
 pi = "latest"
 age = "latest"
+"aqua:controlplaneio-fluxcd/flux-operator" = "0.61.0"
 
 [settings]
 # tools can read the versions files used by other version managers
