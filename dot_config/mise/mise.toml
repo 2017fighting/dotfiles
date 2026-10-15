@@ -39,6 +39,7 @@ java = "latest"
 # "github:multica-ai/multica" = "latest"
 # "github:pouriyajamshidi/tcping" = "latest"
 "github:Tencent/BrowserSkill" = "latest"
+"forgejo:gitea/tea[api_url=https://gitea.com/api/v1]" = "latest"
 # uv
 # "uv:serena" = "latest"
 # npm
