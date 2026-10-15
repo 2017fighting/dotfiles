@@ -1,0 +1,17 @@
+logins:
+    - name: gitea.raenzo.com
+      url: https://gitea.raenzo.com
+      default: false
+      ssh_host: gitea-ssh.raenzo.com
+      ssh_key: ""
+      insecure: false
+      ssh_certificate_principal: ""
+      ssh_agent: true
+      ssh_key_agent_pub: "SHA256:ZFI3j/yMt+VoFNJG21doMy51qjLeMOYXIqvAqoghEtQ"
+      version_check: false
+      user: zhao
+      created: 1792046997
+preferences:
+    editor: false
+    flag_defaults:
+        remote: ""
