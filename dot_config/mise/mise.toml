@@ -34,7 +34,7 @@ java = "latest"
 # "copier" = "latest"
 # github
 # "github:saladday/cc-switch-cli" = "latest"
-# "github:pranshuparmar/witr" = "latest"
+"github:pranshuparmar/witr" = "latest"
 # "github:can1357/oh-my-pi" = "latest"
 # "github:multica-ai/multica" = "latest"
 # "github:pouriyajamshidi/tcping" = "latest"
