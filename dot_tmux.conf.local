@@ -26,6 +26,9 @@ set -gF extended-keys 'always' # needed by Control + Shift bindings
 # See docs/superpowers/specs/2026-09-16-clipboard-osc52-design.md
 set -gq allow-passthrough on
 
+# Pass OSC52 from nested tmux session, See https://github.com/gpakosz/.tmux/issues/565
+set -s set-clipboard on
+
 # -- bindings ------------------------------------------------------------------
 
 # preserve tmux stock bindings,
