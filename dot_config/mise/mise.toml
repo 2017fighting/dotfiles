@@ -37,7 +37,7 @@ java = "latest"
 "github:pranshuparmar/witr" = "latest"
 # "github:can1357/oh-my-pi" = "latest"
 # "github:multica-ai/multica" = "latest"
-# "github:pouriyajamshidi/tcping" = "latest"
+"github:pouriyajamshidi/tcping" = "latest"
 "github:Tencent/BrowserSkill" = "latest"
 "forgejo:gitea/tea[api_url=https://gitea.com/api/v1]" = "latest"
 # uv
