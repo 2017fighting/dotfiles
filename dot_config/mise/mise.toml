@@ -54,6 +54,7 @@ pi = "latest"
 age = "latest"
 "aqua:controlplaneio-fluxcd/flux-operator" = "0.61.0"
 kind = "0.32.0"
+cloudflared = "latest"
 
 [settings]
 # tools can read the versions files used by other version managers
