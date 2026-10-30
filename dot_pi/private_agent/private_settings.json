@@ -11,7 +11,7 @@
   ],
   "theme": "dark",
   "defaultProvider": "omni",
-  "defaultModel": "auto/coding",
+  "defaultModel": "auto/deepseek",
   "tuiMode": "fullscreen",
   "packages": [
     "npm:@juicesharp/rpiv-ask-user-question",
