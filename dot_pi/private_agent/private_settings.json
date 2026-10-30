@@ -1,0 +1,77 @@
+{
+  "$schema": "https://pi.dev/schemas/settings.schema.json",
+  "lastChangelogVersion": "1.3.0",
+  "enableInstallTelemetry": false,
+  "defaultTools": [
+    "read",
+    "bash",
+    "edit",
+    "write",
+    "grep"
+  ],
+  "theme": "dark",
+  "defaultProvider": "omni",
+  "defaultModel": "default",
+  "tuiMode": "fullscreen",
+  "packages": [
+    "npm:@juicesharp/rpiv-ask-user-question",
+    "npm:pi-token-speed",
+    "git:github.com/2017fighting/pi-tokens",
+    "npm:pi-git-status-bar",
+    "npm:pi-web-access",
+    "npm:pi-agents",
+    {
+      "source": "git:github.com/2017fighting/pi-notify",
+      "extensions": [
+        "+index.ts"
+      ],
+      "skills": [
+        "-skills/configure-notify/SKILL.md",
+        "-skills/notify/SKILL.md"
+      ]
+    },
+    "npm:pi-omniroute-sync"
+  ],
+  "transport": "auto",
+  "fullscreenExitOutput": "resume-hint",
+  "fullscreenCopyOnSelect": true,
+  "treeFilterMode": "default",
+  "doubleEscapeAction": "tree",
+  "defaultProjectTrust": "ask",
+  "showCacheMissNotices": true,
+  "markdown": {
+    "mermaid": "final"
+  },
+  "terminal": {
+    "showTerminalProgress": true
+  },
+  "tokenSpeed": {
+    "display": "tps",
+    "icon": "",
+    "useProviderTokens": false,
+    "updateInterval": 0,
+    "countStrategy": "direct",
+    "slidingWindow": 1000,
+    "endTpsBehavior": "average",
+    "thresholds": {
+      "slow": 10,
+      "blazing": 150,
+      "fast": 100,
+      "medium": 50
+    },
+    "colors": {
+      "blazing": "#a6e3a1",
+      "fast": "#89b4fa",
+      "medium": "#f9e2af",
+      "slow": "#f38ba8"
+    },
+    "displayColors": {}
+  },
+  "followUpMode": "one-at-a-time",
+  "fullscreenScrollbar": "hidden",
+  "deviceId": "5f52075c-c77a-46dd-b239-9322032f6c11",
+  "pi-provider-omniroute": {
+    "baseUrl": "https://omniroute.raenzo.com/v1"
+  },
+  "hideThinkingBlock": false
+}
