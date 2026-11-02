@@ -55,6 +55,7 @@ age = "latest"
 "aqua:controlplaneio-fluxcd/flux-operator" = "0.61.0"
 kind = "0.32.0"
 cloudflared = "latest"
+"aqua:docker/compose" = "5.6.1"
 
 [settings]
 # tools can read the versions files used by other version managers
