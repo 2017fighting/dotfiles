@@ -1,6 +1,6 @@
 {
   "$schema": "https://pi.dev/schemas/settings.schema.json",
-  "lastChangelogVersion": "1.3.0",
+  "lastChangelogVersion": "1.4.0",
   "enableInstallTelemetry": false,
   "defaultTools": [
     "read",
@@ -30,7 +30,8 @@
         "-skills/notify/SKILL.md"
       ]
     },
-    "npm:pi-omniroute-sync"
+    "npm:pi-omniroute-sync",
+    "npm:pi-provider-qoder-cn"
   ],
   "transport": "auto",
   "fullscreenExitOutput": "resume-hint",
