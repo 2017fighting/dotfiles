@@ -1,21 +1,3 @@
-# hapi runner — supervised by launchd (macOS) / systemd (Linux). The run_onchange
-# loader script (.chezmoiscripts/run_onchange_after_80-hapi-runner.sh.tmpl) embeds
-# this version; bump it to force the agent/unit to reload after editing the plist
-# or the .service file.
-hapi:
-  runner:
-    # Relative home-dir subpaths that `hapi runner start-sync` syncs with the hub.
-    # Single source of truth — consumed by the launchd plist (macOS) and the
-    # systemd unit (Linux), which each expand them under their own home specifier
-    # ({{ .chezmoi.homeDir }} / %h). Add a path here and both pick it up on the
-    # next `chezmoi apply`.
-    workspaceRoots:
-      - clone
-      - tmp
-      - work
-      - .local/share
-    version: "3"
-
 # System ssh-agent + bw-ssh-add key loader. The agent unit is enabled by
 # .chezmoiscripts/run_onchange_after_81-ssh-agent.sh.tmpl; bump `version` to
 # force a re-enable after editing the unit file. `keyItemIds` lists Bitwarden

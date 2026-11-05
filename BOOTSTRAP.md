@@ -48,7 +48,7 @@ chezmoi init --apply 2017fighting
 - **`before_10`**：用 brew / pacman 装 `bitwarden-cli` + `mise`；
 - **`before_20`**：提前落地 `~/.ssh/config`、`known_hosts`，启动系统 ssh-agent（systemd 单元），**提示你 `bw login`（邮箱 + 主密码 + 2FA）与 `bw-ssh-add`（主密码，把 key 灌进 ssh-agent）**；
 - **正常 phase**：写所有配置文件 + clone externals —— SSH 类（oh-my-zsh / nvim / oh-my-tmux）走 ssh-agent 里的 key；HTTPS 类（catppuccin）不需要 key；
-- **`after_*`**：`brew bundle` 还原、pacman 还原、`mise install` 全套运行时、macOS 系统设置、hapi runner、ssh-agent 单元 enable。
+- **`after_*`**：`brew bundle` 还原、pacman 还原、`mise install` 全套运行时、macOS 系统设置、ssh-agent 单元 enable。
 
 ## 为什么这些步骤不能省
 

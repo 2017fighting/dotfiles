@@ -7,8 +7,9 @@ module or concept that architecture reviews should use instead of describing fil
 
 Every `*.zsh` under `~/.config/zsh/env.d/` is sourced by `~/.zshenv` in **every**
 shell — interactive, non-interactive, and the login shells that launchd/systemd
-spawn for hapi-runner (which rely on zshenv supplying `HAPI_API_URL`). Plain
-snippets (e.g. `cloudflare.zsh`) and chezmoi-decrypted files (e.g. `hapi.zsh.age`) are
+spawn for the `run_onchange` service units (which rely on zshenv supplying their
+tool environment). Plain snippets (e.g. `rclone.zsh`) and chezmoi-decrypted files
+(e.g. `cloudflare.zsh`, from `encrypted_private_cloudflare.zsh.age`) are
 equivalent citizens: drop a file in, every shell inherits it. New tool environment
 belongs here, never as a decrypt-edit-encrypt cycle on a shared blob.
 
@@ -43,11 +44,14 @@ post-install deletion). Error philosophy: loud clone, tolerant tail
 (registration steps warn and continue). See
 `docs/superpowers/specs/2026-08-21-pinned-tool-installer-design.md`.
 
-## workspaceRoots (exemplar of a deep module)
+## ssh keyset (exemplar of a deep module)
 
-`hapi.runner.workspaceRoots` in `.chezmoidata.yaml` is one data entry expanded by
-two adapters (launchd plist on macOS, systemd unit on Linux) — the pattern other
-modules in this repo should copy: one interface, platform specifics behind it.
+`ssh.keyItemIds` / `ssh.agent.version` in `.chezmoidata.yaml` is one data entry
+with several consumers, each an adapter of its own: `bw-ssh-add` renders the item
+ids into the load list, `run_onchange_after_81-ssh-agent.sh.tmpl` reads the version
+to decide when to re-enable the unit, and `just doctor`'s ssh-agent section asserts
+the result. The pattern other modules in this repo should copy: one interface,
+every consumer behind it.
 
 ## clipboard backend (`wl-copy`)
 

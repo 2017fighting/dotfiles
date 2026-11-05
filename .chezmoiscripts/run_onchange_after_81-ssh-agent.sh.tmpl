@@ -21,7 +21,7 @@ systemctl --user daemon-reload
 systemctl --user enable --now "$UNIT"
 
 # Boot-start: ensure the user manager runs before login so the agent is up
-# whenever `bw-ssh-add` runs. Matches the hapi-runner linger behaviour.
+# whenever `bw-ssh-add` runs.
 loginctl enable-linger "$USER" 2>/dev/null \
   || sudo loginctl enable-linger "$USER" 2>/dev/null || true
 

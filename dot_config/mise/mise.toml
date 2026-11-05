@@ -43,7 +43,6 @@ java = "latest"
 # uv
 # "uv:serena" = "latest"
 # npm
-"npm:@twsxtd/hapi" = "latest"
 # "npm:tavily-mcp" = "latest"
 "wrangler" = "latest"
 # "npm:@colbymchenry/codegraph" = "latest"
