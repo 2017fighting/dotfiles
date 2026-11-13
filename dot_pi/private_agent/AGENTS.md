@@ -8,6 +8,10 @@ Ask through the `ask_user_question` tool, never as prose. A grilling round is a 
 
 `~/.agents/skills/` holds the mattpocock skill set. When it is unclear which one fits, read `~/.agents/skills/ask-matt/SKILL.md` — it maps situations to skills (grill → spec → tickets → implement, closed by retro). Read a skill's `SKILL.md` before acting on it or describing what it does.
 
+## Searching
+
+`rg` searches content and `fd` searches file names, both rooted at an explicit directory: `.` in the repo at hand, a parent, or `~`. Widen one level at a time while a scoped search comes up empty — a whole-filesystem sweep walks `/` for minutes and returns noise.
+
 ## Environment
 
 - **mise** (`~/.config/mise/mise.toml`) owns global tools: add one with `mise use -g`, never a brew or npm global install.
