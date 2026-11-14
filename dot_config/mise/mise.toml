@@ -64,7 +64,6 @@ worktrunk = { version = "latest", workflow = "release.yaml" }
 idiomatic_version_file = true
 
 # configure `mise install` to always keep the downloaded archive
-always_keep_download = false # deleted after install by default
 always_keep_install = false  # deleted on failure by default
 
 # configure how frequently (in minutes) to fetch updated plugin repository changes
