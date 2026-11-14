@@ -1,6 +1,6 @@
 {
   "$schema": "https://pi.dev/schemas/settings.schema.json",
-  "lastChangelogVersion": "1.4.0",
+  "lastChangelogVersion": "1.5.2",
   "enableInstallTelemetry": false,
   "defaultTools": [
     "read",
@@ -11,7 +11,7 @@
   ],
   "theme": "dark",
   "defaultProvider": "omni",
-  "defaultModel": "deepseek-flash",
+  "defaultModel": "opencode-go/deepseek-v4.1-flash",
   "tuiMode": "fullscreen",
   "packages": [
     "npm:@juicesharp/rpiv-ask-user-question",
@@ -74,5 +74,9 @@
   "pi-provider-omniroute": {
     "baseUrl": "https://omniroute.raenzo.com/v1"
   },
-  "hideThinkingBlock": false
+  "hideThinkingBlock": false,
+  "extensionChangelogVersions": {
+    "{\"source\":\"git:github.com/2017fighting/pi-tokens\",\"scope\":\"user\"}": "0.2.0",
+    "{\"source\":\"npm:pi-web-access\",\"scope\":\"user\"}": "0.46.0"
+  }
 }
