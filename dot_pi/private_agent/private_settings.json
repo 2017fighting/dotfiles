@@ -10,8 +10,8 @@
     "grep"
   ],
   "theme": "dark",
-  "defaultProvider": "omni",
-  "defaultModel": "opencode-go/deepseek-v4.1-flash",
+  "defaultProvider": "zai-coding-cn",
+  "defaultModel": "glm-5.3",
   "tuiMode": "fullscreen",
   "packages": [
     "npm:@juicesharp/rpiv-ask-user-question",
@@ -77,6 +77,6 @@
   "hideThinkingBlock": false,
   "extensionChangelogVersions": {
     "{\"source\":\"git:github.com/2017fighting/pi-tokens\",\"scope\":\"user\"}": "0.2.0",
-    "{\"source\":\"npm:pi-web-access\",\"scope\":\"user\"}": "0.46.0"
+    "{\"source\":\"npm:pi-web-access\",\"scope\":\"user\"}": "0.48.0"
   }
 }
