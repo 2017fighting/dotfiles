@@ -1,1 +1,1 @@
-export PI_CLIPBOARD_OSC52=1
+# export PI_CLIPBOARD_OSC52=1
