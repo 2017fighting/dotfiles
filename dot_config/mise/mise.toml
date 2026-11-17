@@ -115,3 +115,46 @@ _.path = [
   "node_modules/.bin",
   "./bin",
 ]
+
+# ---------------------------------------------------------------------------
+# wt — a worktree per concurrent session (global: works in any repo)
+# ---------------------------------------------------------------------------
+# A git checkout holds ONE branch, and `git checkout` is global to it. When a
+# second session shares a checkout, its checkout moves the branch out from under
+# a commit — on 2026-11-17 that landed a feature commit on `main`. Isolation has
+# to be a directory, so this is the one command to get one.
+#
+# Lives here rather than in a repo's .mise/config.toml so the rule is the same
+# everywhere an agent works. `git worktree` shares the object store, so merging
+# between the worktree and main costs nothing extra.
+#
+# Usage: mise run wt <branch-or-name>   → prints the path to cd into
+[tasks.wt]
+description = "Create a git worktree for a concurrent session: mise run wt <branch-or-name>"
+# dir = {{cwd}} is load-bearing: mise runs a task in the directory of the config
+# file that declares it, which for a GLOBAL task is ~/.config/mise — not a git
+# repository. (The repo-local copy this replaced got away without it only because
+# the config file happened to sit at the repo root.) Verified 2026-11-17 by
+# running it from a checkout and getting "fatal: not a git repository".
+dir = "{{cwd}}"
+run = '''
+bash -c '
+set -euo pipefail
+name="${1:?usage: mise run wt <branch-or-name>}"
+if ! repo=$(git rev-parse --show-toplevel 2>/dev/null); then
+    printf "wt: %s is not a git repository — cd into a checkout first\n" "$PWD" >&2
+    exit 2
+fi
+base="$HOME/wt/$(basename "$repo")"
+dest="$base/$name"
+mkdir -p "$base"
+if [ -e "$dest" ]; then
+    printf "wt: %s already exists — cd there\n" "$dest" >&2
+else
+    # -B so the name is the branch: an existing branch is reused, a new one forks
+    # from the current HEAD, which is what a session starting work wants.
+    git -C "$repo" worktree add -B "$name" "$dest" HEAD >&2
+fi
+printf "%s\n" "$dest"
+' _ "$@"
+'''
