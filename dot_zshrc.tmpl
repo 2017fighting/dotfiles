@@ -172,3 +172,7 @@ export ANDROID_SDK_ROOT="$ANDROID_HOME"
 # platform-tools first so the SDK's adb wins over the homebrew cask one
 export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
 # >>> end android-capture <<<
+
+# git worktree management
+if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init zsh)"; fi
+
