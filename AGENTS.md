@@ -336,6 +336,54 @@ prettier --write path/to/file
 - Commit messages: verbose, use template at `~/.config/git/message`
 - Use conventional commit aliases if needed (defined in git config)
 
+### Agent skills (global skill set)
+
+pi is the only agent consuming skills here, and it reads `~/.agents/skills/` plus its
+own `~/.pi/agent/skills/` recursively. chezmoi owns both:
+
+- `.chezmoiexternals/skills.yaml` — one `archive` external per upstream source, each
+  landing in its own wrapper directory under `~/.agents/skills/` (`mattpocock-engineering`,
+  `mattpocock-productivity`, `googlechrome-modern-web-guidance`,
+  `pekral-github-readme-generator`) and `impeccable` in `~/.pi/agent/skills/`.
+- `.chezmoiscripts/run_onchange_after_73-browser-skill.sh` — `bsk install-skill --harness pi`;
+  the skill files are embedded in the binary, so nothing is downloaded.
+
+Update the whole set with `just skills` (refresh those externals only) or
+`chezmoi apply --refresh-externals=always`. `just doctor` asserts every wrapper has a
+`SKILL.md` and that no stray top-level directory shadows a managed skill.
+
+Hard-won rules for this file (verified, not theoretical):
+
+- `type: git-repo` ignores `include`/`stripComponents` — use `type: archive` only.
+- Never nest externals (a target inside another external's target): apply aborts with
+  `inconsistent state`.
+- Never add `exclude` to an `archive` entry: it silently disables `include` and pulls
+  the entire repo in.
+- Flat layout inside a wrapper needs `stripComponents: 3` and one wrapper per upstream
+  group, because same-named files across groups (`skills/*/README.md`) collide.
+- `bsk install-skill` must name the harness: `--all` would also hit Codex, which bsk
+  maps to `~/.agents/skills`.
+
+Do NOT run a skill manager against the managed set — `skills add`/`skills update -g`
+write the flat CLI layout straight into `~/.agents/skills` and shadow the externals.
+Adding a skill is a change to `skills.yaml` in this repo. The old boundary text
+("`~/.agents/skills` is populated by a separate skill manager, not by chezmoi")
+is superseded — see `docs/adr/0001-chezmoi-owns-global-skills.md`.
+
+One-time migration on an existing machine (the CLI's flat directories would otherwise
+duplicate every managed skill):
+
+```bash
+rm -rf ~/.agents/skills ~/.agents/.skill-lock.json \
+       ~/.pi/agent/skills/impeccable      # 4.8.0 leftover; the external ships 4.10.x
+mise uninstall npm:skills                 # only if it is still installed
+chezmoi apply && just doctor
+```
+
+`~/.pi/agent/skills/impeccable` is removed by hand because an archive external only
+writes the files the tarball contains — stale files from the old `npx` install (and a
+`bin/` left behind by the launcher) would survive an apply.
+
 ## Common Tasks for Agents
 
 ### Adding a New Configuration File

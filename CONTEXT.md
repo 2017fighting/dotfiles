@@ -76,3 +76,21 @@ _Avoid_: OSC 52 (alone — ambiguous between the app's sequence and tmux's own)
 `set-clipboard external`, and also the one that survives ssh/nested tmux. Not
 required for tmux's own copy-mode `y`, which tmux emits correctly by itself.
 _Avoid_: passthrough (unqualified — could mean the `allow-passthrough` option)
+
+## wrapper external (`~/.agents/skills/<source>`)
+
+An `archive`-type external in `.chezmoiexternals/skills.yaml` whose target is one
+directory per upstream skill repository, holding that repository's skills with the
+upstream group stripped off (`~/.agents/skills/mattpocock-engineering/tdd`). Exists
+because nested externals abort apply and because `type: git-repo` cannot select
+subpaths at all; pi's recursive discovery is what makes the extra directory free.
+_Avoid_: skills external, skill repo (names the source, not the deployed shape)
+
+## managed skill set
+
+The global skills chezmoi deploys for pi: everything the wrapper externals under
+`~/.agents/skills/` contain, plus installer-owned `browser-skill` and `impeccable` in
+`~/.pi/agent/skills/`. Anything outside it — a flat `~/.agents/skills/<name>` written
+by a skill manager — is a leftover to delete, not a skill to keep. Asserted by
+`just doctor`.
+_Avoid_: installed skills, cheatsheet (the shell is a different subsystem), skill list

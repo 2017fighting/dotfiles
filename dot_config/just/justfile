@@ -35,6 +35,12 @@ apply:
 apply-refresh-externals:
     chezmoi apply --refresh-externals
 
+# 刷新受管的 agent skills：只刷 skills 的 externals，不动其余 externals。
+# 清单在 .chezmoiexternals/skills.yaml（一个上游仓库一个 wrapper 目录）。
+[group('skills')]
+skills:
+    chezmoi apply --refresh-externals=always ~/.agents/skills ~/.pi/agent/skills
+
 [group('chezmoi')]
 update:
     chezmoi update
@@ -64,8 +70,9 @@ doctor:
 	#!/usr/bin/env sh
 	set -u
 	ok=0
-	FAILS="$(mktemp)"
-	trap 'rm -f "$FAILS"' EXIT
+	TMPD="$(mktemp -d)"
+	FAILS="$TMPD/fails"
+	trap 'rm -rf "$TMPD"' EXIT
 	pass() { printf '  \033[32m✓\033[0m %s\n' "$1"; }
 	# NOTE: fail() appends to a file, not a variable — several checks below run in
 	# pipeline subshells (awk | while), where setting ok=1 would be lost.
@@ -118,6 +125,9 @@ doctor:
 	    file)
 	      if [ -f "$HOME/$p" ]; then pass "file: $p"; else fail "missing: $p (chezmoi apply --refresh-externals)"; fi
 	      ;;
+	    archive)
+	      if [ -d "$HOME/$p" ]; then pass "extracted: $p"; else fail "missing: $p (chezmoi apply --refresh-externals)"; fi
+	      ;;
 	  esac
 	done
 
@@ -140,6 +150,43 @@ doctor:
 	  [ -n "$p" ] || continue
 	  if [ -d "$HOME/$p/.git" ]; then pass "pinned: $name ($p)"; else fail "pinned: $name clone missing: $p (chezmoi apply)"; fi
 	done
+
+	hdr "agent skills"
+	# Global skills are chezmoi-owned (docs/adr/0001-chezmoi-owns-global-skills.md):
+	# one archive external per upstream source, each in its own wrapper dir under
+	# ~/.agents/skills/. Expectations are derived from .chezmoiexternals/skills.yaml,
+	# so adding a source updates this check; a top-level dir there that no external
+	# owns is a migration leftover — pi keeps the first discovered skill of a given
+	# name and warns, so a stale flat copy silently shadows the managed one.
+	SKILLS_EXT="$EXT_DIR/skills.yaml"
+	if [ ! -f "$SKILLS_EXT" ]; then
+	  fail "skills: .chezmoiexternals/skills.yaml missing"
+	else
+	  awk '/^\.agents\/skills\/[A-Za-z0-9._-]+:$/ { p=$0; sub(/:$/, "", p); sub(/^\.agents\/skills\//, "", p); print p }' \
+	    "$SKILLS_EXT" >"$TMPD/wrappers"
+	  while read -r w; do
+	    [ -n "$w" ] || continue
+	    if find "$HOME/.agents/skills/$w" -name SKILL.md -print -quit 2>/dev/null | grep -q .; then
+	      pass "skills: $w"
+	    else
+	      fail "skills: $w has no SKILL.md (chezmoi apply --refresh-externals)"
+	    fi
+	  done <"$TMPD/wrappers"
+	  for d in "$HOME"/.agents/skills/*/; do
+	    [ -d "$d" ] || continue
+	    b="$(basename "$d")"
+	    if ! grep -qx "$b" "$TMPD/wrappers" 2>/dev/null; then
+	      fail "skills: stray ~/.agents/skills/$b (not in skills.yaml — migration leftover?)"
+	    fi
+	  done
+	fi
+	# Installer-owned: the skill files are embedded in the bsk binary, so chezmoi only
+	# runs the installer (run_onchange_after_73-browser-skill.sh).
+	if [ -f "$HOME/.pi/agent/skills/browser-skill/SKILL.md" ]; then
+	  pass "skills: browser-skill (bsk install-skill)"
+	else
+	  fail "skills: browser-skill missing (chezmoi apply; needs bsk on PATH)"
+	fi
 
 	hdr "environment intake"
 	# Every env.d entry in source (plain + encrypted) must exist on target, and

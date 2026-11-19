@@ -1,0 +1,69 @@
+# Global agent skills (pi only). pi discovers every directory containing SKILL.md
+# recursively, so each upstream source gets its own wrapper directory under
+# ~/.agents/skills/ instead of landing flat in that directory.
+#
+# Why this shape (measured, not assumed — see docs/adr/0001-chezmoi-owns-global-skills.md):
+#   * type: git-repo IGNORES include/stripComponents — it clones the whole repo into
+#     the target, .git included. Only type: archive honours them, so every entry here
+#     is a GitHub tarball.
+#   * Nested externals abort apply with "inconsistent state"
+#     (e.g. .agents/skills + .agents/skills/<name>), hence one wrapper per source.
+#   * exclude is unusable: adding it silently disables include and pulls the entire
+#     repo in (39 skills instead of 27).
+#   * Flat layout inside a wrapper = stripComponents: 3, one wrapper per upstream
+#     group — skills/engineering/README.md and skills/productivity/README.md collapse
+#     onto the same target path when both groups share a wrapper.
+#   * update: `just skills` (or `chezmoi apply --refresh-externals=always`).
+
+# mattpocock/skills — the grill → spec → tickets → implement family (27 skills).
+# Only engineering/ and productivity/ are wanted: deprecated/, in-progress/ and
+# misc/ are upstream experiments and never installed. A skill added to either group
+# upstream shows up on the next refresh; removing one leaves a stale directory, so
+# `just doctor` flags stray paths under ~/.agents/skills/.
+.agents/skills/mattpocock-engineering:
+  type: archive
+  url: https://github.com/mattpocock/skills/archive/refs/heads/main.tar.gz
+  refreshPeriod: 168h
+  stripComponents: 3
+  include:
+    - "skills-main/skills/engineering/**"
+
+.agents/skills/mattpocock-productivity:
+  type: archive
+  url: https://github.com/mattpocock/skills/archive/refs/heads/main.tar.gz
+  refreshPeriod: 168h
+  stripComponents: 3
+  include:
+    - "skills-main/skills/productivity/**"
+
+# GoogleChrome/modern-web-guidance — web-platform guidance. The repo also ships a
+# chrome-extensions skill; only this one is wanted.
+.agents/skills/googlechrome-modern-web-guidance:
+  type: archive
+  url: https://github.com/GoogleChrome/modern-web-guidance/archive/refs/heads/main.tar.gz
+  refreshPeriod: 168h
+  stripComponents: 3
+  include:
+    - "modern-web-guidance-main/skills/modern-web-guidance/**"
+
+# pekral/github-readme-generator — README writing/auditing. Default branch is master.
+.agents/skills/pekral-github-readme-generator:
+  type: archive
+  url: https://github.com/pekral/github-readme-generator/archive/refs/heads/master.tar.gz
+  refreshPeriod: 168h
+  stripComponents: 3
+  include:
+    - "github-readme-generator-master/skills/github-readme-generator/**"
+
+# pbakaus/impeccable — frontend design vocabulary. The compiled skill is checked into
+# the repo (.pi/skills/impeccable/): SKILL.md + reference/ + the scripts/impeccable
+# launcher, which downloads its platform binary on first use. Deploying it here means
+# no `npx impeccable install` at apply time; hooks are not installed because pi has no
+# hook support.
+.pi/agent/skills/impeccable:
+  type: archive
+  url: https://github.com/pbakaus/impeccable/archive/refs/heads/main.tar.gz
+  refreshPeriod: 168h
+  stripComponents: 3
+  include:
+    - "impeccable-main/.pi/skills/impeccable/**"

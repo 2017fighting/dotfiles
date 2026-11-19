@@ -47,7 +47,9 @@ java = "latest"
 "wrangler" = "latest"
 # "npm:@colbymchenry/codegraph" = "latest"
 # "npm:chrome-devtools-mcp" = "latest"
-"npm:skills" = "latest"
+# "npm:skills" = "latest"   # removed: global skills are chezmoi-owned now
+# (.chezmoiexternals/skills.yaml). `skills update -g` rewrites ~/.agents/skills and
+# would fight the managed tree — see docs/adr/0001-chezmoi-owns-global-skills.md.
 # "npm:rea-agents" = "latest"
 pi = "latest"
 age = "latest"
