@@ -38,7 +38,7 @@ java = "latest"
 # "github:can1357/oh-my-pi" = "latest"
 # "github:multica-ai/multica" = "latest"
 "github:pouriyajamshidi/tcping" = "latest"
-"github:Tencent/BrowserSkill" = "latest"
+"github:Tencent/BrowserSkill" = { version = "latest", version_prefix = "cli-v" }  # bsk CLI, not the chrome extension (ext-v*)
 "forgejo:gitea/tea[api_url=https://gitea.com/api/v1]" = "latest"
 # uv
 # "uv:serena" = "latest"
