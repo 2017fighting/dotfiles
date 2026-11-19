@@ -197,7 +197,12 @@ doctor:
 	for f in "$ENV_SRC"/*; do
 	  [ -f "$f" ] || continue
 	  b="$(basename "$f")"
-	  case "$b" in encrypted_private_*) b="${b#encrypted_private_}"; b="${b%.age}" ;; esac
+	  # Source name → target name: chezmoi drops the attribute prefixes in any
+	  # combination (`encrypted_private_cloudflare.zsh.age` and
+	  # `encrypted_bifrost.zsh.age` both exist here) and the .age suffix.
+	  b="${b%.age}"
+	  b="${b#encrypted_}"
+	  b="${b#private_}"
 	  if [ -f "$HOME/.config/zsh/env.d/$b" ]; then pass "intake: $b"; else fail "intake: $b missing (chezmoi apply)"; fi
 	done
 	val="$(zsh -lc 'printf %s "${RCLONE_FILTER_FROM:-}"' 2>/dev/null)"
