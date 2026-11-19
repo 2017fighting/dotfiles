@@ -10,8 +10,8 @@
     "grep"
   ],
   "theme": "dark",
-  "defaultProvider": "zai-coding-cn",
-  "defaultModel": "glm-5.3",
+  "defaultProvider": "opencode-go",
+  "defaultModel": "deepseek-v4.1-flash",
   "tuiMode": "fullscreen",
   "packages": [
     "npm:@juicesharp/rpiv-ask-user-question",
@@ -30,8 +30,8 @@
         "-skills/notify/SKILL.md"
       ]
     },
-    "npm:pi-omniroute-sync",
-    "npm:pi-provider-qoder-cn"
+    "npm:pi-provider-qoder-cn",
+    "npm:pi-bifrost-provider-enriched"
   ],
   "transport": "auto",
   "fullscreenExitOutput": "resume-hint",
@@ -71,12 +71,10 @@
   "followUpMode": "one-at-a-time",
   "fullscreenScrollbar": "hidden",
   "deviceId": "5f52075c-c77a-46dd-b239-9322032f6c11",
-  "pi-provider-omniroute": {
-    "baseUrl": "https://omniroute.raenzo.com/v1"
-  },
   "hideThinkingBlock": false,
   "extensionChangelogVersions": {
     "{\"source\":\"git:github.com/2017fighting/pi-tokens\",\"scope\":\"user\"}": "0.2.0",
-    "{\"source\":\"npm:pi-web-access\",\"scope\":\"user\"}": "0.48.0"
+    "{\"source\":\"npm:pi-web-access\",\"scope\":\"user\"}": "0.48.0",
+    "{\"source\":\"npm:pi-bifrost-provider-enriched\",\"scope\":\"user\"}": "0.3.0"
   }
 }
