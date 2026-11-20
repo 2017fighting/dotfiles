@@ -10,8 +10,8 @@
     "grep"
   ],
   "theme": "dark",
-  "defaultProvider": "opencode-go",
-  "defaultModel": "deepseek-v4.1-flash",
+  "defaultProvider": "bifrost",
+  "defaultModel": "Open Design/deepseek-v4.1-flash-eco",
   "tuiMode": "fullscreen",
   "packages": [
     "npm:@juicesharp/rpiv-ask-user-question",
