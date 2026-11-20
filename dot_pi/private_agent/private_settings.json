@@ -75,6 +75,6 @@
   "extensionChangelogVersions": {
     "{\"source\":\"git:github.com/2017fighting/pi-tokens\",\"scope\":\"user\"}": "0.2.0",
     "{\"source\":\"npm:pi-web-access\",\"scope\":\"user\"}": "0.48.0",
-    "{\"source\":\"npm:pi-bifrost-provider-enriched\",\"scope\":\"user\"}": "0.3.0"
+    "{\"source\":\"npm:pi-bifrost-provider-enriched\",\"scope\":\"user\"}": "0.3.1"
   }
 }
