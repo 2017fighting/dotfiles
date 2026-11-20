@@ -10,8 +10,8 @@
     "grep"
   ],
   "theme": "dark",
-  "defaultProvider": "bifrost",
-  "defaultModel": "Open Design/deepseek-v4.1-flash-eco",
+  "defaultProvider": "opendesign",
+  "defaultModel": "deepseek-v4.1-flash-eco",
   "tuiMode": "fullscreen",
   "packages": [
     "npm:@juicesharp/rpiv-ask-user-question",
@@ -31,7 +31,8 @@
       ]
     },
     "npm:pi-provider-qoder-cn",
-    "npm:pi-bifrost-provider-enriched"
+    "npm:pi-bifrost-provider-enriched",
+    "npm:@lokeraar/pi-opendesign-bridge"
   ],
   "transport": "auto",
   "fullscreenExitOutput": "resume-hint",
