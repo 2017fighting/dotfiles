@@ -1,6 +1,6 @@
 {
   "$schema": "https://pi.dev/schemas/settings.schema.json",
-  "lastChangelogVersion": "1.5.2",
+  "lastChangelogVersion": "1.6.0",
   "enableInstallTelemetry": false,
   "defaultTools": [
     "read",
@@ -10,8 +10,8 @@
     "grep"
   ],
   "theme": "dark",
-  "defaultProvider": "opendesign",
-  "defaultModel": "deepseek-v4.1-flash-eco",
+  "defaultProvider": "magpie",
+  "defaultModel": "group/default",
   "tuiMode": "fullscreen",
   "packages": [
     "npm:@juicesharp/rpiv-ask-user-question",
@@ -31,7 +31,8 @@
       ]
     },
     "npm:pi-provider-qoder-cn",
-    "npm:@lokeraar/pi-opendesign-bridge"
+    "npm:@lokeraar/pi-opendesign-bridge",
+    "npm:@x-magpie/pi"
   ],
   "transport": "auto",
   "fullscreenExitOutput": "resume-hint",
@@ -76,5 +77,6 @@
     "{\"source\":\"git:github.com/2017fighting/pi-tokens\",\"scope\":\"user\"}": "0.2.0",
     "{\"source\":\"npm:pi-web-access\",\"scope\":\"user\"}": "0.48.0",
     "{\"source\":\"npm:pi-bifrost-provider-enriched\",\"scope\":\"user\"}": "0.3.1"
-  }
+  },
+  "defaultThinkingLevel": "medium"
 }
