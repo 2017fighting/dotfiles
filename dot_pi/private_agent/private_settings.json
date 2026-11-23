@@ -31,7 +31,6 @@
       ]
     },
     "npm:pi-provider-qoder-cn",
-    "npm:pi-bifrost-provider-enriched",
     "npm:@lokeraar/pi-opendesign-bridge"
   ],
   "transport": "auto",
