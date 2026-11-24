@@ -131,6 +131,16 @@ _.path = [
 # between the worktree and main costs nothing extra.
 #
 # Usage: mise run wt <branch-or-name>   → prints the path to cd into
+#
+# Must also work from a BARE repo — `~/clone/home-ops` is one (object store +
+# worktrees, no checkout of its own), and `rev-parse --show-toplevel` fails there
+# with "must be run in a work tree" exactly like `git status` does. Verified
+# 2026-11-24: cleaning every worktree left nowhere to stand, and `mise run wt
+# main` answered "not a git repository" from inside the repo. --git-common-dir
+# is the one query that never needs a work tree, and the bare root and every
+# linked worktree share it, so its parent is the repo root in all three shapes
+# (bare / plain checkout / linked worktree). It is relative to cwd — resolve
+# before taking `..`.
 [tasks.wt]
 description = "Create a git worktree for a concurrent session: mise run wt <branch-or-name>"
 # dir = {{cwd}} is load-bearing: mise runs a task in the directory of the config
@@ -143,10 +153,9 @@ run = '''
 bash -c '
 set -euo pipefail
 name="${1:?usage: mise run wt <branch-or-name>}"
-if ! repo=$(git rev-parse --show-toplevel 2>/dev/null); then
-    printf "wt: %s is not a git repository — cd into a checkout first\n" "$PWD" >&2
-    exit 2
-fi
+common=$(git rev-parse --git-common-dir 2>/dev/null) \
+    || { printf "wt: %s is not a git repository — cd into a checkout first\n" "$PWD" >&2; exit 2; }
+repo=$(cd "$common/.." && pwd -P)
 base="$HOME/wt/$(basename "$repo")"
 dest="$base/$name"
 mkdir -p "$base"
