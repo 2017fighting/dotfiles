@@ -48,10 +48,10 @@
     "showTerminalProgress": true
   },
   "tokenSpeed": {
-    "display": "tps",
+    "display": "full",
     "icon": "",
-    "useProviderTokens": false,
-    "updateInterval": 0,
+    "useProviderTokens": true,
+    "updateInterval": 500,
     "countStrategy": "direct",
     "slidingWindow": 1000,
     "endTpsBehavior": "average",
@@ -67,7 +67,9 @@
       "medium": "#f9e2af",
       "slow": "#f38ba8"
     },
-    "displayColors": {}
+    "prefix": "",
+    "formatDuration": true,
+    "suffixTheme": "dim"
   },
   "followUpMode": "one-at-a-time",
   "fullscreenScrollbar": "hidden",
