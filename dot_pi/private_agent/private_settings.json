@@ -31,7 +31,6 @@
       ]
     },
     "npm:pi-provider-qoder-cn",
-    "npm:@lokeraar/pi-opendesign-bridge",
     "npm:@x-magpie/pi"
   ],
   "transport": "auto",
@@ -50,8 +49,8 @@
   "tokenSpeed": {
     "display": "full",
     "icon": "",
-    "useProviderTokens": true,
-    "updateInterval": 500,
+    "useProviderTokens": false,
+    "updateInterval": 0,
     "countStrategy": "direct",
     "slidingWindow": 1000,
     "endTpsBehavior": "average",
