@@ -1,0 +1,20 @@
+# Worktrunk (bare `wt`, shell-integrated from .zshrc) — the ONE way to create a
+# worktree; `mise run wt` was retired 2026-11-25 (two tools named wt, two
+# conventions, a session could pick either).
+#
+# Layout: ~/wt/<repo>/<branch>. The same for every repo on the machine, and the
+# same one the retired mise task used, so existing worktrees (~/wt/home-ops/main,
+# ~/wt/home-ops/natmap) are already at their template path.
+#
+# `{{ remote_repo }}`, not `{{ repo }}`: `~/clone/home-ops` is a BARE repo laid
+# out as `home-ops/.git` (no checkout of its own), and worktrunk reads that as
+# "bare repo at home-ops/.git" — so `{{ repo }}` resolves to `.git` and worktrees
+# land in ~/wt/.git/<branch>. Verified 2026-11-25 from both the bare root and a
+# linked worktree: remote_repo (the primary remote's name, independent of the
+# directory on disk) gives ~/wt/home-ops/<branch> from either; repo does not.
+#
+# `~` expands to the home directory, so the path does not depend on which
+# worktree the command is invoked from. `| sanitize` turns `a/b` into `a-b`, so
+# a slash in a branch name cannot create a nested directory.
+worktree-path = "~/wt/{{ remote_repo }}/{{ branch | sanitize }}"
+skip-shell-integration-prompt = true
