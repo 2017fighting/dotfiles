@@ -58,6 +58,8 @@ kind = "0.32.0"
 cloudflared = "latest"
 "aqua:docker/compose" = "5.6.1"
 worktrunk = { version = "latest", workflow = "release.yaml" }
+antigravity-cli = "latest"
+golangci-lint = "2.14.0"
 
 [settings]
 # tools can read the versions files used by other version managers
