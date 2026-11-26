@@ -20,7 +20,7 @@
       "platforms": []
     },
     "agent_settled": {
-      "enabled": false,
+      "enabled": true,
       "platforms": []
     },
     "memory_consolidated": {
