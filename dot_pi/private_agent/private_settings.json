@@ -1,6 +1,6 @@
 {
   "$schema": "https://pi.dev/schemas/settings.schema.json",
-  "lastChangelogVersion": "1.6.0",
+  "lastChangelogVersion": "1.6.1",
   "enableInstallTelemetry": false,
   "defaultTools": [
     "read",
@@ -39,7 +39,6 @@
   "treeFilterMode": "default",
   "doubleEscapeAction": "tree",
   "defaultProjectTrust": "ask",
-  "showCacheMissNotices": true,
   "markdown": {
     "mermaid": "final"
   },
@@ -79,5 +78,11 @@
     "{\"source\":\"npm:pi-web-access\",\"scope\":\"user\"}": "0.48.0",
     "{\"source\":\"npm:pi-bifrost-provider-enriched\",\"scope\":\"user\"}": "0.3.1"
   },
-  "defaultThinkingLevel": "high"
+  "defaultThinkingLevel": "high",
+  "notices": {
+    "cacheMisses": true,
+    "cacheWarming": true,
+    "compactionCosts": true,
+    "reasoningDrops": true
+  }
 }
