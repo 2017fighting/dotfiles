@@ -30,7 +30,6 @@
         "-skills/notify/SKILL.md"
       ]
     },
-    "npm:pi-provider-qoder-cn",
     "npm:@x-magpie/pi"
   ],
   "transport": "auto",
@@ -84,5 +83,8 @@
     "cacheWarming": true,
     "compactionCosts": true,
     "reasoningDrops": true
-  }
+  },
+  "enabledModels": [
+    "magpie/group/default"
+  ]
 }
